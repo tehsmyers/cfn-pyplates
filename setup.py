@@ -1,23 +1,14 @@
 from setuptools import setup
-import version
+
+import cfn_pyplates
 
 setup(
     name='cfn-pyplates',
-    version=version.__version__,
+    version=cfn_pyplates.__version__,
     author='Sean Myers',
     author_email='sean.dst@gmail.com',
     url='https://github.com/seandst/cfn-pyplates',
-    packages=['cfn_pyplates', 'cfn_pyplates.version'],
-    # TODO: Word this better.
-    # Move the 'version' package from its position next to setup.py into
-    # cfn_pyplates at install, to let setup.py and cfn_pyplates use the
-    # same version source while still allowing convenience imports in
-    # cfn_pyplates __init__.py to bring in dependencies that may not
-    # yet be installed.
-    package_dir = {
-        'cfn_pyplates': 'cfn_pyplates',
-        'cfn_pyplates.version': 'version',
-    },
+    packages=['cfn_pyplates'],
     description='Amazon Web Services CloudFormation template generator',
     long_description=open('README.rst').read(),
     install_requires=[
@@ -30,6 +21,7 @@ setup(
         'verlib',
     ],
     test_suite = 'cfn_pyplates.tests',
+    tests_require = ['mock'],
     entry_points={
         'console_scripts': [
             'cfn_py_generate = cfn_pyplates.cli:generate',
