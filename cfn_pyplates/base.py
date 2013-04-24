@@ -8,7 +8,7 @@ from cfn_pyplates.exceptions import AddRemoveError
 aws_template_format_version = '2010-09-09'
 
 __all__ = [
-    'BaseMapping',
+    'JSONableDict',
     'CloudFormationTemplate',
     'Parameters',
     'Mappings',
@@ -16,19 +16,19 @@ __all__ = [
     'Outputs',
 ]
 
-class BaseMapping(OrderedDict):
+class JSONableDict(OrderedDict):
     # Override these in instancees
     # Class Identifier MUST match the documented CloudFormation type name
     def __init__(self, update_dict=None):
-        super(BaseMapping, self).__init__()
+        super(JSONableDict, self).__init__()
         if update_dict:
             self.update(update_dict)
 
     def __unicode__(self):
         # Indenting to keep things readable
-        # Annoying trailing whitespace after commas removed
+        # Trailing whitespace after commas removed
         # (The space after colons is cool, though. He can stay.)
-        return unicode(json.dumps(self, indent=2, separators=(',', ': ')))
+        return unicode(self.json)
 
     def __str__(self):
         return unicode(self).encode('utf-8')
@@ -37,18 +37,18 @@ class BaseMapping(OrderedDict):
         # This makes it simple to bind child dictionaries to an
         # attribute while still making sure they wind up in the output
         # dictionary, see usage example in CloudFormationTemplate init
-        if isinstance(value, BaseMapping):
+        if isinstance(value, JSONableDict):
             self.add(value)
-        super(BaseMapping, self).__setattr__(name, value)
+        super(JSONableDict, self).__setattr__(name, value)
 
     def __delattr__(self, name):
         attr = getattr(self, name)
-        if isinstance(attr, BaseMapping):
+        if isinstance(attr, JSONableDict):
             try:
                 self.remove(attr)
             except KeyError:
                 pass
-        super(BaseMapping, self).__delattr__(name)
+        super(JSONableDict, self).__delattr__(name)
 
     @property
     def name(self):
@@ -56,10 +56,10 @@ class BaseMapping(OrderedDict):
 
     @property
     def json(self):
-        return json.dumps(self)
+        return self.to_json(indent=2, separators=(',', ': '))
 
     def add(self, child):
-        if isinstance(child, BaseMapping):
+        if isinstance(child, JSONableDict):
             self.update(
                 {child.name: child}
             )
@@ -67,13 +67,16 @@ class BaseMapping(OrderedDict):
             raise AddRemoveError
 
     def remove(self, child):
-        if isinstance(child, BaseMapping):
+        if isinstance(child, JSONableDict):
             del(self[child.name])
         else:
             raise AddRemoveError
 
+    def to_json(self, *args, **kwargs):
+        return json.dumps(self, *args, **kwargs)
 
-class CloudFormationTemplate(BaseMapping):
+
+class CloudFormationTemplate(JSONableDict):
     '''The root element of a CloudFormation template
 
     Takes an option description string in the constructor
@@ -102,14 +105,14 @@ class CloudFormationTemplate(BaseMapping):
     def __unicode__(self):
         # Before outputting to json, remove empty elements
         def predicate(obj):
-            '''getmembers predicate to find empty BaseMapping attributes attached to self
+            '''getmembers predicate to find empty JSONableDict attributes attached to self
 
             CloudFormation doesn't like empty mappings for these top-level
-            attributes, so any falsey BaseMapping that's at attribute on
+            attributes, so any falsey JSONableDict that's at attribute on
             the CloudFormationTemplate instance needs to get removed
 
             '''
-            if isinstance(obj, BaseMapping) and not obj:
+            if isinstance(obj, JSONableDict) and not obj:
                 return True
         for attr, mapping in inspect.getmembers(self, predicate):
             delattr(self, attr)
@@ -118,9 +121,8 @@ class CloudFormationTemplate(BaseMapping):
 
 
 # Stack'o'Mappings for CloudFormationTemplate
-class Parameters(BaseMapping): pass
-class Mappings(BaseMapping): pass
-class Resources(BaseMapping): pass
-class Outputs(BaseMapping): pass
-
+class Parameters(JSONableDict): pass
+class Mappings(JSONableDict): pass
+class Resources(JSONableDict): pass
+class Outputs(JSONableDict): pass
 

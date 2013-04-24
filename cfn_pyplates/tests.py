@@ -1,19 +1,23 @@
+from cStringIO import StringIO
 from textwrap import dedent
 from tempfile import NamedTemporaryFile
+import json
+import sys
 
+from mock import patch
 import unittest2 as unittest
 
-from cfn_pyplates.cli import generate
+from cfn_pyplates import cli
 import cfn_pyplates
 
-class TestResource(cfn_pyplates.BaseMapping):
+class TestResource(cfn_pyplates.JSONableDict):
     pass
 
-class BaseMappingTestCase(unittest.TestCase):
+class JSONableDictTestCase(unittest.TestCase):
     def test_crazy_addchild_ordering(self):
         # We should be able to add children to any element at any time,
         # before or after that element has been added to a parent.
-        bm = cfn_pyplates.BaseMapping()
+        bm = cfn_pyplates.JSONableDict()
         tr1 = TestResource({'Id': 1})
         tr2 = TestResource({'Id': 2})
         # Tack the TestResource onto the template
@@ -34,12 +38,12 @@ class BaseMappingTestCase(unittest.TestCase):
     def test_contructor_dict_arg(self):
         # Making sure that a resource instantiated with a params dict is updated correctly
         update_dict = {'Test': 'A custom custructydict'}
-        bm = cfn_pyplates.BaseMapping()
+        bm = cfn_pyplates.JSONableDict()
         bm.add(TestResource(update_dict))
         self.assertEqual(bm['TestResource'], update_dict)
 
     def test_getsetattr(self):
-        bm = cfn_pyplates.BaseMapping()
+        bm = cfn_pyplates.JSONableDict()
 
         self.assertNotIn('TestResource', bm)
         bm.test_resource = TestResource()

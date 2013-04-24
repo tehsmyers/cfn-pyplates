@@ -8,11 +8,12 @@ setup(
     author_email='sean.dst@gmail.com',
     url='https://github.com/seandst/cfn-pyplates',
     packages=['cfn_pyplates', 'cfn_pyplates.version'],
+    # TODO: Word this better.
     # Move the 'version' package from its position next to setup.py into
     # cfn_pyplates at install, to let setup.py and cfn_pyplates use the
     # same version source while still allowing convenience imports in
-    # cfn_pyplates __init__.py that bring in potentially as-yet
-    # uninstalled dependencies.
+    # cfn_pyplates __init__.py to bring in dependencies that may not
+    # yet be installed.
     package_dir = {
         'cfn_pyplates': 'cfn_pyplates',
         'cfn_pyplates.version': 'version',

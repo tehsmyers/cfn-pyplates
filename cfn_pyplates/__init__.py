@@ -9,7 +9,7 @@ pythonic classes to represent the template resource hierarchy
 # Get all the useful bits in this namespace explicitly
 from cfn_pyplates import exceptions
 from cfn_pyplates.base import (
-    BaseMapping,
+    JSONableDict,
     CloudFormationTemplate,
     Parameters,
     Mappings,

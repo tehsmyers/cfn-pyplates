@@ -7,4 +7,4 @@ class Error(Exception):
         self.args = (message,) + args
 
 class AddRemoveError(Error):
-    message = 'Only subclasses of BaseMapping can be added or removed to this object.'
+    message = 'Only subclasses of JSONableDict can be added or removed to this object.'
