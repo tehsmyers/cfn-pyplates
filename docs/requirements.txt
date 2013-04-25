@@ -1,0 +1,7 @@
+# Requirements for docs -- not needed unless you want to build the docs
+
+# Need this, of course
+Sphinx
+
+# this lets you write docstrings according to the google python style guide
+cartouche
