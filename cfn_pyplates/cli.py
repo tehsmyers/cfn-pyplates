@@ -1,19 +1,30 @@
-'''CLI Entry points for handy bins'''
-import yaml
+'''CLI Entry points for handy bins
+
+Documentation for CLI methods defined in this file will be that method's
+usage information as seen on the command-line.'''
 import os
+import sys
 
 from docopt import docopt
 from schema import Schema, Use, Or, Optional
+import yaml
 
+from cfn_pyplates import core, functions
+from cfn_pyplates.exceptions import Error
 from cfn_pyplates.options import OptionsMapping
-import cfn_pyplates
 
 def _load_pyplate(pyplate, options_mapping=None):
     'Load a pyplate file object, and return a dict of its globals'
+    # Inject all the useful stuff into the template namespace
     exec_namespace = {
-        'cfn_pyplates': cfn_pyplates,
-        'options_mapping': options_mapping,
+        'options': options_mapping,
     }
+    for entry in core.__all__:
+        exec_namespace[entry] = getattr(core, entry)
+    for entry in functions.__all__:
+        exec_namespace[entry] = getattr(functions, entry)
+
+    # Do the needful.
     exec pyplate in exec_namespace
     return exec_namespace
 
@@ -25,8 +36,12 @@ def _find_cloudformationtemplate(pyplate):
 
     '''
     for key, value in pyplate.iteritems():
-        if isinstance(value, cfn_pyplates.CloudFormationTemplate):
+        if isinstance(value, core.CloudFormationTemplate):
             return value
+
+    # If we haven't returned something, it's an Error
+    raise Error('No CloudFormationTemplate found in pyplate')
+
 
 def _open_writable(outfile_name):
     'Helper function so we can offload the opening and validation to Schema'
@@ -45,7 +60,7 @@ Arguments:
 
   outfile
     File in which to place the compiled JSON template
-    (if omitted, outputs to stdout)
+    (if omitted or '-', outputs to stdout)
 
 Options:
   -o --options=<options_mapping>
@@ -87,14 +102,20 @@ WARNING!
     # first case we'd have to pass the options mapping in to the test
     # function. Not sure that's possible.
     pyplate = _load_pyplate(args['<pyplate>'], options_mapping)
-    cft = _find_cloudformationtemplate(pyplate)
 
-    if cft:
-        outfile = args['<outfile>']
-        if isinstance(outfile, file):
-            outfile.write(unicode(cft))
-        else:
-            print(unicode(cft))
+    try:
+        cft = _find_cloudformationtemplate(pyplate)
+        output = unicode(cft)
+    except Error as e:
+        print 'Error processing the pyplate:'
+        print e.message
+        return 1
+
+    outfile = args['<outfile>']
+    if isinstance(outfile, file):
+        outfile.write(output)
     else:
-        print('No CloudFormationTemplate found in pyplate')
+        print(output)
 
+    # Explicitly return a posixy "EVERYTHING IS OKAY" 0
+    return 0

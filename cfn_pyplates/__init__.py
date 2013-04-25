@@ -1,47 +1,14 @@
-'''Pyplates: Python-generated cloudformation templates!
+'''pyplates: CloudFormation templates, generated with python
 
-Class-based representations of cloudformation templates and resources, with
-the goal of baking cloudformation templates based on input config files and
-pythonic classes to represent the template resource hierarchy
-
+The base of the package, which has convenience imports that are made available
+in the global namespace of a working pyplate.
 '''
+# For more info, visit https://cfn-pyplates.readthedocs.org/
+
 # Friendly PEP-386 version string
-__version__ = '0.0.5'
+__version__ = '0.1.0'
 
 import warnings
-
-try:
-    # Get all the useful bits in this namespace explicitly
-    from cfn_pyplates import exceptions
-    from cfn_pyplates.base import (
-        JSONableDict,
-        CloudFormationTemplate,
-        Parameters,
-        Mappings,
-        Resources,
-        Outputs,
-    )
-    from cfn_pyplates.functions import (
-        base64,
-        find_in_map,
-        get_att,
-        get_azs,
-        join,
-        select,
-        ref,
-    )
-except ImportError:
-    pyplates_errormsg = '''
-    Failed to import cfn_pyplates components!
-
-    This should only happen during install, before dependencies are evaluated
-    and installed.
-    '''
-    # Imports here can fail because dependencies aren't installed yet
-    # The only time that happens is when setup.py is evaluating the
-    # package version and figuring out what dependencies to install. In
-    # that case, none of the handy imports above are useful.
-    warnings.warn(pyplates_errormsg, ImportWarning)
 
 try:
     from verlib import NormalizedVersion
