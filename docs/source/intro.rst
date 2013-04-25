@@ -1,5 +1,5 @@
 Intended Audience
------------------
+=================
 
 pyplates are intended to be used with the `Amazon Web Services CloudFormation
 <https://aws.amazon.com/cloudformation/>`_ service. If you're already a
@@ -9,7 +9,7 @@ way to make those templates while leveraging all of the power that the python
 environment has to offer.
 
 Features
---------
+========
 
 - Allows for easy customization of templates at runtime, allowing one
   pyplate to describe all of your CFN Stack roles (production, testing,
@@ -22,7 +22,7 @@ Features
   without having to worry about nesting or order-of-operations issues.
 
 So, what is a pyplate?
-----------------------
+======================
 
 A pyplate is a class-based python representation of a JSON CloudFormation
 template and resources, with

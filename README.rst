@@ -4,12 +4,10 @@ cfn-pyplates
 
 Amazon Web Services CloudFormation templates, generated with Python!
 
-Docs?
-=====
+Doumentation
+============
 
-Coming soon! Aiming for sphinxy readthedocsness...
+https://cfn-pyplates.readthedocs.org/
 
-PyPI?
-=====
+.. include:: docs/sources/intro.rst
 
-Also coming soon! Want to get the docs done first...
