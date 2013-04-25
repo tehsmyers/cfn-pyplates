@@ -9,5 +9,10 @@ Doumentation
 
 https://cfn-pyplates.readthedocs.org/
 
-.. include:: docs/sources/intro.rst
+
+.. This include doesn't work, but one day it might!
+    https://github.com/github/markup/issues/172
+
+.. include:: docs/source/intro.rst
+
 
