@@ -1,0 +1,13 @@
+# A production stack, so big instances, lots of scaling!
+StackRole: testing
+AppServerAvailabilityZones:
+    - us-east-1a
+    - us-east-1d
+    - us-east-1e
+AppServerInstanceType: m1.large
+AutoScalinggroupMinSize: 4 # Need at least 4 running all the time...
+AutoScalingGroupMaxSize: 100 # Really? 100? Also YAML lets you put comments here.
+CloudWatchAlarmActionsEnabled: true
+ImageId: ami-c30360aa
+# Only admins have this SSH keypair
+KeyPair: production

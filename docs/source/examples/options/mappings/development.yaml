@@ -1,0 +1,17 @@
+# A development stack, so very few and very small instances
+StackRole: development
+AppServerAvailabilityZones:
+    # us-east-1b and us-east-1c smell funny, skip those...
+    - us-east-1a
+    - us-east-1d
+    - us-east-1e
+# micros are cheap, woo!
+AppServerInstanceType: m1.micro
+# No more/no less than 1
+AutoScalinggroupMinSize: 1
+AutoScalingGroupMaxSize: 1
+# Don't scale based on CPU alarms...
+# Even though we can't because the max group size is 1
+CloudWatchAlarmActionsEnabled: false
+# SSH keypair to use, this is one that developers have
+KeyPair: developers

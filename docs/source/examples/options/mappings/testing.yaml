@@ -1,0 +1,16 @@
+# A testing stack, so small instances but now it'll scale a little
+StackRole: testing
+AppServerAvailabilityZones:
+    - us-east-1a
+    - us-east-1d
+    - us-east-1e
+# We can test on smaller instances than we need in production
+AppServerInstanceType: m1.small
+# We're testing, so we'd love to make sure scaling works
+AutoScalinggroupMinSize: 1
+AutoScalingGroupMaxSize: 4
+CloudWatchAlarmActionsEnabled: true
+# Let's boot a buntu...
+ImageId: ami-c30360aa
+# SSH keypair to use, developers can get in here, just like before
+KeyPair: developers

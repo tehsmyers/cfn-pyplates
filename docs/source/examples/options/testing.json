@@ -1,0 +1,222 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "My static webapp testing stack",
+  "Resources": {
+    "LoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "HealthCheck": {
+          "HealthyThreshold": "2",
+          "Interval": "30",
+          "Target": "HTTP:80/",
+          "Timeout": "5",
+          "UnhealthyThreshold": "2"
+        },
+        "Listeners": [
+          {
+            "InstancePort": "80",
+            "PolicyNames": [],
+            "LoadBalancerPort": "80",
+            "Protocol": "HTTP",
+            "InstanceProtocol": "HTTP"
+          }
+        ],
+        "AvailabilityZones": [
+          "us-east-1a",
+          "us-east-1d",
+          "us-east-1e"
+        ]
+      }
+    },
+    "ELBSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "allow traffic from our app servers to the load balancer"
+      }
+    },
+    "ELBSecurityGroupIngressHTTP": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "FromPort": "80",
+        "GroupName": {
+          "Ref": "ELBSecurityGroup"
+        },
+        "SourceSecurityGroupOwnerId": {
+          "Fn::GetAtt": [
+            "LoadBalancer",
+            "SourceSecurityGroup.OwnerAlias"
+          ]
+        },
+        "SourceSecurityGroupName": {
+          "Fn::GetAtt": [
+            "LoadBalancer",
+            "SourceSecurityGroup.GroupName"
+          ]
+        },
+        "ToPort": "80",
+        "IpProtocol": "tcp"
+      }
+    },
+    "SSHSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "SecurityGroupIngress": {
+          "ToPort": "22",
+          "IpProtocol": "tcp",
+          "FromPort": "22",
+          "CidrIp": "0.0.0.0/0"
+        },
+        "GroupDescription": "allows inbound SSH from all"
+      }
+    },
+    "AppServerAutoScalingGroup": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": 1,
+        "Tags": [
+          {
+            "PropagateAtLaunch": true,
+            "Value": "testing-static-app-server",
+            "Key": "Name"
+          }
+        ],
+        "MaxSize": 4,
+        "HealthCheckGracePeriod": 300,
+        "LaunchConfigurationName": {
+          "Ref": "AppServerAutoScalingLaunchConfig"
+        },
+        "AvailabilityZones": [
+          "us-east-1a",
+          "us-east-1d",
+          "us-east-1e"
+        ],
+        "LoadBalancerNames": [
+          {
+            "Ref": "LoadBalancer"
+          }
+        ],
+        "HealthCheckType": "ELB"
+      }
+    },
+    "AppServerAutoScalingLaunchConfig": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "\n",
+              [
+                "#!/bin/bash -v",
+                "# do stuff...",
+                "# ",
+                "# Like maybe kick off cfnbootstrap, using all of the",
+                "# AWS:CloudFormation::Init Metadata That we could have",
+                "# put on our AutoScalingGroup",
+                "exit 0"
+              ]
+            ]
+          }
+        },
+        "KeyName": "developers",
+        "SecurityGroups": [
+          {
+            "Ref": "ELBSecurityGroup"
+          },
+          {
+            "Ref": "SSHSecurityGroup"
+          }
+        ],
+        "InstanceType": "m1.small",
+        "ImageId": "ami-c30360aa"
+      }
+    },
+    "AppServerScaleUpPolicy": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "ScalingAdjustment": "1",
+        "Cooldown": "600",
+        "AutoScalingGroupName": {
+          "Ref": "AppServerAutoScalingGroup"
+        },
+        "AdjustmentType": "ChangeInCapacity"
+      }
+    },
+    "AppServerScaleDownPolicy": {
+      "Type": "AWS::AutoScaling::ScalingPolicy",
+      "Properties": {
+        "ScalingAdjustment": "-1",
+        "Cooldown": "600",
+        "AutoScalingGroupName": {
+          "Ref": "AppServerAutoScalingGroup"
+        },
+        "AdjustmentType": "ChangeInCapacity"
+      }
+    },
+    "AppServerCPUAlarmHigh": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": {
+              "Ref": "AppServerAutoScalingGroup"
+            }
+          }
+        ],
+        "Namespace": "AWS/EC2",
+        "ActionsEnabled": true,
+        "MetricName": "CPUUtilization",
+        "EvaluationPeriods": "5",
+        "AlarmActions": [
+          {
+            "Ref": "AppServerScaleUpPolicy"
+          }
+        ],
+        "AlarmDescription": "Scale up if average CPU usage of the AppServers stays above 75% for at least 5 minutes",
+        "Period": "60",
+        "ComparisonOperator": "GreaterThanThreshold",
+        "Statistic": "Average",
+        "Threshold": "75",
+        "Unit": "Percent"
+      }
+    },
+    "AppServerCPUAlarmLow": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": {
+              "Ref": "AppServerAutoScalingGroup"
+            }
+          }
+        ],
+        "Namespace": "AWS/EC2",
+        "ActionsEnabled": true,
+        "MetricName": "CPUUtilization",
+        "EvaluationPeriods": "5",
+        "AlarmActions": [
+          {
+            "Ref": "AppServerScaleUpPolicy"
+          }
+        ],
+        "AlarmDescription": "Scale down if average CPU usage of the AppServers stays below 25% for at least 5 minutes",
+        "Period": "60",
+        "ComparisonOperator": "LessThanThreshold",
+        "Statistic": "Average",
+        "Threshold": "25",
+        "Unit": "Percent"
+      }
+    }
+  },
+  "Outputs": {
+    "LoadBalancerEndpoint": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LoadBalancer",
+          "DNSName"
+        ]
+      }
+    }
+  }
+}
