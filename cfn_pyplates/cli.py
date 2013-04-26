@@ -9,7 +9,7 @@ from docopt import docopt
 from schema import Schema, Use, Or, Optional
 import yaml
 
-from cfn_pyplates import core, functions
+from cfn_pyplates import __version__, core, functions
 from cfn_pyplates.exceptions import Error
 from cfn_pyplates.options import OptionsMapping
 
@@ -53,6 +53,7 @@ def generate():
 Usage:
   cfpy_generate <pyplate> [<outfile>] [-o/--options=<options_mapping>]
   cfpy_generate (-h|--help)
+  cfpy_generate --version
 
 Arguments:
   pyplate
@@ -79,12 +80,13 @@ WARNING!
 
   Be careful.
 '''
-    args = docopt(generate.__doc__)
+    args = docopt(generate.__doc__, version=__version__)
     scheme = Schema({
         '<pyplate>': Use(open),
         '<outfile>': Or(None, '-', Use(_open_writable)),
         '--options': Or(None, Use(open)),
         '--help': Or(True, False),
+        '--version': Or(True, False),
     })
     args = scheme.validate(args)
 
