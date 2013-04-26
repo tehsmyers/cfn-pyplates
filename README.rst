@@ -4,6 +4,9 @@ cfn-pyplates
 
 Amazon Web Services CloudFormation templates, generated with Python!
 
+.. image:: https://travis-ci.org/seandst/cfn-pyplates.png
+    :target: https://travis-ci.org/seandst/cfn-pyplates/
+
 Doumentation
 ============
 
@@ -14,5 +17,4 @@ https://cfn-pyplates.readthedocs.org/
     https://github.com/github/markup/issues/172
 
 .. include:: docs/source/intro.rst
-
 

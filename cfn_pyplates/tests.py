@@ -15,8 +15,7 @@ except ImportError:
     patch = None
     mock_error = 'skipped -- install mock to run this test'
 
-class TestResource(core.JSONableDict):
-    pass
+class TestResource(core.JSONableDict): pass
 
 class JSONableDictTestCase(unittest.TestCase):
     def test_crazy_addchild_ordering(self):
@@ -48,19 +47,19 @@ class JSONableDictTestCase(unittest.TestCase):
         self.assertEqual(bm['TestResource'], update_dict)
 
     def test_naming(self):
-        class NamedClass(core.JSONableDict): pass
-
-        obj = NamedClass(name='NormalName')
-        # Get works?
+        obj = TestResource(name='NormalName')
+        # Getter method works?
         self.assertEqual(obj.name, 'NormalName')
+        self.assertEqual(obj._name, 'NormalName')
 
-        # Set works?
+        # Setter method works?
         obj.name = 'DifferentName'
         self.assertEqual(obj.name, 'DifferentName')
+        self.assertEqual(obj._name, 'DifferentName')
 
-        # Del works?
+        # Del method works?
         del(obj.name)
-        self.assertEqual(obj.name, 'NamedClass')
+        self.assertEqual(obj.name, 'TestResource')
         self.assertIsNone(obj._name)
 
     def test_getsetattr(self):
@@ -148,6 +147,93 @@ class ResourcesTestCase(unittest.TestCase):
         }''')
         self.assertEqual(unicode(cft.resources.test), expected_out)
 
+
+class IntrinsicFunctionsTestCase(unittest.TestCase):
+    def test_base64(self):
+        ret = functions.base64('test')
+        self.assertEqual(ret['Fn::Base64'], 'test')
+
+    def test_find_in_map(self):
+        ret = functions.find_in_map('MapName', 'MapKey', 'MapValue')
+        self.assertEqual(ret['Fn::FindInMap'], ['MapName', 'MapKey', 'MapValue'])
+
+    def test_get_att(self):
+        ret = functions.get_att('ThingName', 'AttrName')
+        self.assertEqual(ret['Fn::GetAtt'], ['ThingName', 'AttrName'])
+
+    def test_get_azs(self):
+        ret = functions.get_azs('region')
+        self.assertEqual(ret['Fn::GetAZs'], 'region')
+
+    def test_join(self):
+        ret = functions.join('.', 'x', 'y', 'z')
+        self.assertEqual(ret['Fn::Join'], ['.', ['x', 'y', 'z']])
+
+    def test_select(self):
+        ret = functions.select(3, 1, 2, 3, 4, 5)
+        self.assertEqual(ret['Fn::Select'], [3, [1, 2, 3, 4, 5]])
+
+    def test_ref(self):
+        ret = functions.ref('ThingName')
+        self.assertEqual(ret['Ref'], 'ThingName')
+
+
+class MiscElementsTestCase(unittest.TestCase):
+    def test_resource_element(self):
+        resource = core.Resource('ResourceName',
+            'AWS::Testing::ResourceType',
+            {
+                'Key1': 'Value1',
+                'Key2': 'Value2',
+            }
+        )
+        self.assertEqual(resource.name, 'ResourceName')
+        self.assertIn('Properties', resource)
+        properties = resource['Properties']
+        self.assertEqual(properties['Key1'], 'Value1')
+        self.assertEqual(properties['Key2'], 'Value2')
+
+    def test_properties(self):
+        properties = core.Properties({
+            'Key1': 'Value1',
+            'Key2': 'Value2',
+        })
+        # Create a resource, and test attaching properties to it
+        resource = core.Resource('ResourceName',
+            'AWS::Testing::ResourceType')
+        resource.add(properties)
+
+        self.assertEqual(resource.name, 'ResourceName')
+        self.assertIn('Properties', resource)
+        properties = resource['Properties']
+        self.assertEqual(resource['Properties']['Key1'], 'Value1')
+        self.assertEqual(resource['Properties']['Key2'], 'Value2')
+
+    def test_parameter_element(self):
+        parameter = core.Parameter('ParameterName',
+            'String',
+            {'Key': 'Value'})
+
+    def test_output_element(self):
+        output = core.Output('OutputName',
+            'Output Value',
+            'Output Description')
+        self.assertEqual(output.name, 'OutputName')
+        self.assertEqual(output['Value'], 'Output Value')
+        self.assertEqual(output['Description'], 'Output Description')
+
+    def test_ec2_tags_element(self):
+        tags = core.ec2_tags({
+            'TestKey1': 'TestValue1',
+            'TestKey2': 'TestValue2'
+        })
+        for entry in tags:
+            self.assertIn('Key', entry)
+            self.assertIn('Value', entry)
+            if entry['Key'] == 'TestKey1':
+                self.assertEqual(entry['Value'], 'TestValue1')
+            if entry['Key'] == 'TestKey2':
+                self.assertEqual(entry['Value'], 'TestValue2')
 
 
 @unittest.skipIf(patch is None, mock_error)
