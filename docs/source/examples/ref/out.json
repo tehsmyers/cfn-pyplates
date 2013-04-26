@@ -1,0 +1,53 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "A self-referential template.",
+  "Parameters": {
+    "ImageId": {
+      "Default": "ami-c30360aa",
+      "AllowedPattern": "ami-[a-f0-9]+",
+      "Type": "String",
+      "Description": "Amazon Machine Image ID to use for the created instance",
+      "ConstraintDescription": "must start with \"ami-\" followed by lowercase hexidecimal characters"
+    },
+    "InstanceName": {
+      "Type": "String",
+      "Description": "A name for the instance to be created"
+    },
+    "InstanceType": {
+      "Default": "m1.small",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "AnInstance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "Tags": [
+          {
+            "Value": {
+              "Ref": "InstanceName"
+            },
+            "Key": "Name"
+          }
+        ],
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "ImageId": {
+          "Ref": "ImageId"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "DnsName": {
+      "Description": "The public DNS Name for AnInstance",
+      "Value": {
+        "Fn::GetAtt": [
+          "AnInstance",
+          "PublicDnsName"
+        ]
+      }
+    }
+  }
+}

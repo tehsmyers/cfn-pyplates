@@ -1,9 +1,11 @@
 '''pyplates: CloudFormation templates, generated with python
 
-The base of the package, which has convenience imports that are made available
-in the global namespace of a working pyplate.
+See also:
+
+- https://aws.amazon.com/cloudformation/
+- https://cfn-pyplates.readthedocs.org/ (you might already be here)
+- https://github.com/seandst/cfn-pyplates/
 '''
-# For more info, visit https://cfn-pyplates.readthedocs.org/
 
 # Friendly PEP-386 version string
 __version__ = '0.1.0'

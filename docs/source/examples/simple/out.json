@@ -1,0 +1,13 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "A very small template.",
+  "Resources": {
+    "AnInstance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": "m1.small",
+        "ImageID": "ami-c30360aa"
+      }
+    }
+  }
+}

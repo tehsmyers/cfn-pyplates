@@ -32,10 +32,11 @@ cfn_pyplates.functions
     :members:
 
 .. rubric:: Footnotes
-.. [#cfn-template] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-structure.html
-.. [#cfn-parameters] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
-.. [#cfn-mappings] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
-.. [#cfn-resources] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
-.. [#cfn-outputs] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
 .. [#cfn-functions] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
+.. [#cfn-mappings] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
+.. [#cfn-outputs] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
+.. [#cfn-parameters] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
 .. [#cfn-properties] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/properties-section-structure.html
+.. [#cfn-resources] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
+.. [#cfn-resource-types] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
+.. [#cfn-template] http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-structure.html

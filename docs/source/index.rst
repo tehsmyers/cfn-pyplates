@@ -6,8 +6,10 @@
 Pyplates: Python-generated cloudformation templates!
 ====================================================
 
-Contents:
----------
+.. include:: intro.rst
+
+Contents
+=========
 
 .. toctree::
     :maxdepth: 2
@@ -15,17 +17,9 @@ Contents:
     pyplates
     apiref
 
-.. include:: intro.rst
-
 .. toctree::
     :hidden:
 
     intro
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    why_yaml
 

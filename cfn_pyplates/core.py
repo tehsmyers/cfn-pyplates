@@ -20,6 +20,9 @@ __all__ = [
     'Outputs',
     'Properties',
     'Resource',
+    'Parameter',
+    'Output',
+    'ec2_tags',
 ]
 
 class JSONableDict(OrderedDict):
@@ -245,19 +248,26 @@ class Properties(JSONableDict):
 
 
 class Resource(JSONableDict):
-    '''A generic CFN Resource [#cfn-resources]_
+    '''A generic CFN Resource [#cfn-resource-types]_
 
-    Most resources have a name, and consist of a 'Type' and 'Properties' dict.
+    Used in the :class:`cfn_pyplates.core.Resources` container.
+
+    All resources have a name, and most have a 'Type' and 'Properties' dict.
     Thus, this class takes those as arguments and makes a generic resource.
 
-    The 'name' parameter must follow CFN's guidelines for naming, found `here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html>`_
-    The 'type' parameter must be one of the `CFN Resource Types <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html>`_.
-    The optional 'properties' parameter is a dictionary of properties as defined by the resource type, see documentation references in the 'type' parameter.
+    The 'name' parameter must follow CFN's guidelines for naming [#cfn-resources]_
+    The 'type' parameter must be one of these:
+
+    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
+
+    The optional 'properties' parameter is a dictionary of properties as
+    defined by the resource type, see documentation related to each resource
+    type
 
     Args:
-        name: The name of the resource to add
+        name: The unique name of the resource to add
         type: The type of this resource
-        properties: An optional properties mapping to apply to this resource,
+        properties: Optional properties mapping to apply to this resource,
             can be an instance of ``JSONableDict`` or just plain old ``dict``
 
     '''
@@ -273,3 +283,87 @@ class Resource(JSONableDict):
                 # If not, coerce it
                 self.add(Properties(properties))
 
+
+class Parameter(JSONableDict):
+    '''A CFN Parameter [#cfn-parameters]_
+
+    Used in the :class:`cfn_pyplates.core.Parameters` container, a Parameter
+    will be used when the template is processed by CloudFormation to prompt the
+    user for any additional input.
+
+    More information for Parameter options:
+
+    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+
+    Args:
+        name: The unique name of the parameter to add
+        type: The type of this parameter
+        properties: Optional properties mapping to apply to this parameter
+
+    '''
+
+    def __init__(self, name, type, properties=None):
+        # Just like a Resource, except the properties go in the
+        # update_dict, not a named key.
+        update_dict = {'Type': type}
+        if properties is not None:
+            update_dict.update(properties)
+        super(Parameter, self).__init__(update_dict, name)
+
+
+class Output(JSONableDict):
+    '''A CFN Output [#cfn-outputs]_
+
+    Used in the :class:`cfn_pyplates.core.Outputs`, an Output entry describes
+    a value to be shown when describe this stack using CFN API tools.
+
+    More information for Output options can be found here:
+
+    here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
+
+    Args:
+        name: The unique name of the output
+        value: The value the output should return
+        description: An optional description of this output
+
+    '''
+
+    def __init__(self, name, value, description=None):
+        update_dict = {'Value': value}
+        if description is not None:
+            update_dict['Description'] = description
+        super(Output, self).__init__(update_dict, name)
+
+
+def ec2_tags(tags):
+    '''A container for Tags on EC2 Instances
+
+    Tags are declared really verbosely in CFN templates, but we have
+    opportunites in the land of python to keep things a little more
+    sane.
+
+    So we can turn the
+    `AWS EC2 Tags example <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-tags.html>`_
+    from this::
+
+        "Tags": [
+            { "Key" : "Role", "Value": "Test Instance" },
+            { "Key" : "Application", "Value" : { "Ref" : "AWS::StackName"} }
+        ]
+
+    Into something more like this::
+
+        EC2Tags({
+            'Role': 'Test Instance',
+            'Application': ref('StackName'),
+        })
+
+    Args:
+        tags: A dictionary of tags to apply to an EC2 instance
+
+    '''
+    tags_list = list()
+    for key, value in tags.iteritems():
+        tags_list.append({'Key': key, 'Value': value})
+
+    return tags_list
