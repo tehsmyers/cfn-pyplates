@@ -199,6 +199,7 @@ class Parameters(JSONableDict):
     '''
     pass
 
+
 class Mappings(JSONableDict):
     '''The base Container for stack option mappings [#cfn-mappings]_
 
@@ -212,7 +213,6 @@ class Mappings(JSONableDict):
     pass
 
 
-
 class Resources(JSONableDict):
     '''The base Container for stack resources [#cfn-resources]_
 
@@ -221,14 +221,12 @@ class Resources(JSONableDict):
     pass
 
 
-
 class Outputs(JSONableDict):
     '''The base Container for stack outputs [#cfn-outputs]_
 
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
     '''
     pass
-
 
 
 # Other 'named' JSONableDicts
@@ -244,6 +242,7 @@ class Properties(JSONableDict):
     Properties will be most commonly found in Resources
     '''
     pass
+
 
 class Resource(JSONableDict):
     '''A generic CFN Resource [#cfn-resources]_
