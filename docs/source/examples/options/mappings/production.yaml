@@ -1,5 +1,5 @@
 # A production stack, so big instances, lots of scaling!
-StackRole: testing
+StackRole: production
 AppServerAvailabilityZones:
     - us-east-1a
     - us-east-1d
