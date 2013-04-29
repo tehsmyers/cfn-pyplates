@@ -112,14 +112,15 @@ of the options for each stack role:
 
 And here's the pyplate:
 
-.. rubric:: template.py
-.. literalinclude:: examples/options/template.py
+.. toctree::
+
+    examples/options/template
 
 Notice that 'ImageId' is absent from the development options mapping. This
 will trigger a prompt for the user to fill in the blanks. This does two things:
 
-    - It gives you the ability to easily add options at runtime where appropriate
-    - It helps you spot typos in options names
+- It gives you the ability to easily add options at runtime where appropriate
+- It helps you spot typos in options names
 
 In our case, the former reason is what we're after. Our developers love to boot
 all sorts of different AMIs and mess around, so it's easiest just to put in a
