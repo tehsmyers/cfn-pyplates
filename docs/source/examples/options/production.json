@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "My static webapp testing stack",
+  "Description": "My static webapp production stack",
   "Resources": {
     "LoadBalancer": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
@@ -76,7 +76,7 @@
         "Tags": [
           {
             "PropagateAtLaunch": true,
-            "Value": "testing-static-app-server",
+            "Value": "production-static-app-server",
             "Key": "Name"
           }
         ],

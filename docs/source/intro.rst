@@ -1,3 +1,7 @@
+..
+    This is copied into the README for displaying on github.
+    Try to keep the two files in sync :\
+
 Intended Audience
 =================
 
