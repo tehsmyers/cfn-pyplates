@@ -16,11 +16,11 @@ Notes:
   sequences as input (join, select), argument unpacking is used. Therefore,
   pass the sequence elements one at a time, rather than the sequence itself,
   after passing the separator (for join) or index (for select).
-* Using CloudFormation's Join function versus a pythonic 'string'.join will
-  avoid issues that could arise when the string join method coerces its
-  arguments to strings.
-
-.. TODO - An example of when ''.join() is less good than cfn's join()?
+* Using CloudFormation's Join function versus a pythonic 'string'.join
+  allows you to use CFN's intrinsic functions inside a join statement. The
+  pythonic string join method may literally interpret a call to an intrinsic
+  function, causing the resulting JSON to be interpreted as a string and
+  ignored by the CloudFormation template parser
 
 .. note:
     Documentation for the functions is verbatim from the AWS Docs
