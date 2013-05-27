@@ -28,6 +28,12 @@ Notes:
     to fit with normal python style.
 '''
 
+# Where needed, exception error messages are stored on the intrinsic function
+# wrappers to make testing the function failure cases very easy
+
+
+from exceptions import IntrinsicFuncInputError
+
 __all__ = [
     'base64',
     'find_in_map',
@@ -123,7 +129,12 @@ def join(sep, *args):
     Returns: The combined string.
 
     '''
+    if len(args) < 2:
+        raise IntrinsicFuncInputError(join._errmsg_needinput)
+
     return {'Fn::Join': [sep, list(args)]}
+
+join._errmsg_needinput = 'Unable to join on one or less things!'
 
 def select(index, *args):
     '''The intrinsic function Fn::Select returns a single object from a list of objects by index.
@@ -131,7 +142,9 @@ def select(index, *args):
     .. note:
         select is represented here "just in case".
         Most likely, using the python equivalent in a pyplate will be
-        easier to both look at and maintain.
+        easier to both look at and maintain, but in the event that selects
+        need to take place after CFN has interpolated all the intrinsic
+        functions, it may still be useful.
 
     .. warning:: Important
         Fn::Select does not check for null values or if the index is out of
@@ -149,7 +162,28 @@ def select(index, *args):
     Returns: The selected object.
 
     '''
+    try:
+        index = int(index)
+    except ValueError:
+        raise IntrinsicFuncInputError(select._errmsg_int)
+    if not args:
+        message = 'Unable to select from an empty list!'
+        raise IntrinsicFuncInputError(select._errmsg_empty)
+    if filter(lambda x: x is None, args):
+        message = 'List of selections include null values!'
+        raise IntrinsicFuncInputError(select._errmsg_null)
+    try:
+        args[index]
+    except IndexError:
+        message = 'Provided index is invalid!'
+        raise IntrinsicFuncInputError(select._errmsg_index)
+
     return {'Fn::Select': [index, list(args)]}
+
+select._errmsg_int = 'Index must be a number!'
+select._errmsg_empty = 'Unable to select from an empty list!'
+select._errmsg_null = 'List of selections include null values!'
+select._errmsg_index = 'Provided index is invalid!'
 
 def ref(logical_name):
     '''The intrinsic function Ref returns the value of the specified parameter or resource.
