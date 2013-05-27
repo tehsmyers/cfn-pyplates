@@ -6,7 +6,7 @@ import sys
 
 import unittest2 as unittest
 
-from cfn_pyplates import cli, core, functions
+from cfn_pyplates import cli, core, exceptions, functions
 
 try:
     from mock import patch
@@ -148,7 +148,7 @@ class ResourcesTestCase(unittest.TestCase):
         self.assertEqual(unicode(cft.resources.test), expected_out)
 
 
-class IntrinsicFunctionsTestCase(unittest.TestCase):
+class IntrinsicFuncsTestCase(unittest.TestCase):
     def test_base64(self):
         ret = functions.base64('test')
         self.assertEqual(ret['Fn::Base64'], 'test')
@@ -176,6 +176,43 @@ class IntrinsicFunctionsTestCase(unittest.TestCase):
     def test_ref(self):
         ret = functions.ref('ThingName')
         self.assertEqual(ret['Ref'], 'ThingName')
+
+
+class IntrinsicFuncsFailureCase(unittest.TestCase):
+    def test_join_unjoinable(self):
+        with self.assertRaises(exceptions.IntrinsicFuncInputError) as ctx:
+            functions.join('.')
+            self.assertEqual(ctx.exception.message,
+                functions.join._errmsg_needinput)
+
+        with self.assertRaises(exceptions.IntrinsicFuncInputError) as ctx:
+            functions.join('.', 'x')
+            self.assertEqual(ctx.exception.message,
+                functions.join._errmsg_needinput)
+
+    def test_select_int(self):
+        with self.assertRaises(exceptions.IntrinsicFuncInputError) as ctx:
+            functions.select('not an int')
+            self.assertEqual(ctx.exception.message,
+                functions.select._errmsg_int)
+
+    def test_select_empty(self):
+        with self.assertRaises(exceptions.IntrinsicFuncInputError) as ctx:
+            functions.select(0)
+            self.assertEqual(ctx.exception.message,
+                functions.select._errmsg_empty)
+
+    def test_select_null(self):
+        with self.assertRaises(exceptions.IntrinsicFuncInputError) as ctx:
+            functions.select(0, '', None)
+            self.assertEqual(ctx.exception.message,
+                functions.select._errmsg_null)
+
+    def test_select_index(self):
+        with self.assertRaises(exceptions.IntrinsicFuncInputError) as ctx:
+            functions.select(2, '', '')
+            self.assertEqual(ctx.exception.message,
+                functions.select._errmsg_index)
 
 
 class MiscElementsTestCase(unittest.TestCase):
