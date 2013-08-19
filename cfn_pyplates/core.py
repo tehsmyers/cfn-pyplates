@@ -34,6 +34,8 @@ __all__ = [
     'Resource',
     'Parameter',
     'Output',
+    'Metadatums',
+    'Metadata',
     'ec2_tags',
 ]
 
@@ -184,6 +186,7 @@ class CloudFormationTemplate(JSONableDict):
         # Tack on all the base template elements that a CF template can handle
         # at easy-to-reach parameters
         self.parameters = Parameters()
+        self.metadata = Metadatums()
         self.mappings = Mappings()
         self.resources = Resources()
         self.outputs = Outputs()
@@ -204,6 +207,14 @@ class CloudFormationTemplate(JSONableDict):
             delattr(self, attr)
 
         return super(CloudFormationTemplate, self).__unicode__()
+
+
+class Metadatums(JSONableDict):
+    '''The base Container for metadatums used at stack creation [#cfn-metadata]_
+
+    Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
+    '''
+    pass
 
 
 # CloudFormationTemplate base elements
@@ -284,7 +295,7 @@ class Resource(JSONableDict):
 
     '''
 
-    def __init__(self, name, type, properties=None):
+    def __init__(self, name, type, properties=None, metadata=None):
         update_dict = {'Type': type}
         super(Resource, self).__init__(update_dict, name)
         if properties:
@@ -294,6 +305,9 @@ class Resource(JSONableDict):
             except AddRemoveError:
                 # If not, coerce it
                 self.add(Properties(properties))
+        if metadata:
+            # Assume we've got a JSONableDict
+            self.add(metadata)
 
 
 class Parameter(JSONableDict):
@@ -345,6 +359,30 @@ class Output(JSONableDict):
         if description is not None:
             update_dict['Description'] = description
         super(Output, self).__init__(update_dict, name)
+
+
+class Metadata(JSONableDict):
+    '''A CFN Output [#cfn-outputs]_
+
+    Used in the :class:`cfn_pyplates.core.Metadata`, The Metadata attribute enables you to associate
+    structured data with a resource. By adding a Metadata attribute to a resource, you can add data in
+    JSON format to the resource declaration. In addition, you can use intrinsic functions (such as GetAtt and Ref),
+    parameters, and pseudo parameters within the Metadata attribute to add those interpreted values.
+
+    More information for Metadata can be found here:
+
+    here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-metadata.html
+
+    Args:
+        name: The unique name of the output
+        value: The value the output should return
+        description: An optional description of this output
+
+    '''
+
+    def __init__(self, properties=None):
+        super(Metadata, self).__init__(properties, "Metadata")
+
 
 
 def ec2_tags(tags):
