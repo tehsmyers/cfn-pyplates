@@ -20,7 +20,7 @@ See also:
 '''
 
 # Friendly PEP-386 version string
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 import warnings
 
