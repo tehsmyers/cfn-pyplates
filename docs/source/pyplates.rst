@@ -54,6 +54,30 @@ The output certainly makes a mess of the script file, but that's really a discus
 .. literalinclude:: examples/useful/out.json
     :language: json
 
+Adding Metadata to Resources
+==================================
+Cloudformation provides extensive support for Metadata that may be used to associate structured data with a resource.
+
+.. note:: 
+
+    AWS CloudFormation does not validate the JSON in the Metadata attribute.
+
+
+.. rubric:: s3.py
+.. literalinclude:: examples/metadata/s3.py
+
+.. rubric:: out.json
+.. literalinclude:: examples/metadata/s3.json
+    :language: json
+
+.. rubric:: ec2_instance.py
+.. literalinclude:: examples/metadata/ec2_instance.py
+
+.. rubric:: out.json
+.. literalinclude:: examples/metadata/ec2_instance.json
+    :language: json
+
+
 Referencing Other Template Objects
 ==================================
 

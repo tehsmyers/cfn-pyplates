@@ -1,0 +1,13 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "A slightly more useful template.",
+  "Resources": {
+    "MyS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Metadata": {
+        "Object1": "Location1",
+        "Object2": "Location2"
+      }
+    }
+  }
+}
