@@ -124,23 +124,6 @@ class CloudFormationTemplateTestCase(unittest.TestCase):
         self.assertEqual(unicode(cft), expected_out)
 
 
-class MetadataTestCase(unittest.TestCase):
-    def test_metadata(self):
-        # just make sure the metadata comes out right
-        cft = core.CloudFormationTemplate()
-        cft.metadata.test = core.Metadata({"Object1": "Location1", "Object2": "Location2"})
-        # Should have a new 'Metadata' key in our template resources
-        self.assertIn('Metadata', cft.metadata)
-
-        # And it should look like this...
-        expected_out = dedent(u'''\
-        {
-          "Object1": "Location1",
-          "Object2": "Location2"
-        }''')
-        self.assertEqual(unicode(cft.metadata.test), expected_out)
-
-
 class ResourcesTestCase(unittest.TestCase):
     def test_resource(self):
         # No properties for this one, just make sure the resource comes
@@ -190,6 +173,80 @@ class ResourcesTestCase(unittest.TestCase):
             "Object1": "Location1",
             "Object2": "Location2"
           }
+        }''')
+        self.assertEqual(unicode(cft.resources.test), expected_out)
+
+    def test_resource_with_deletion_policy(self):
+        deletion_policy = core.DeletionPolicy("Retain")
+        res = core.Resource('TestResource', 'AWS::Resource::Test', None, deletion_policy)
+        cft = core.CloudFormationTemplate()
+        cft.resources.test = res
+
+        # The output should have the metadata attached
+        expected_out = dedent(u'''\
+        {
+          "Type": "AWS::Resource::Test",
+          "DeletionPolicy": "Retain"
+        }''')
+        self.assertEqual(unicode(cft.resources.test), expected_out)
+
+    def test_resource_with_depends_on(self):
+        depends_on = core.DependsOn("Location2")
+        res = core.Resource('TestResource', 'AWS::Resource::Test', None, depends_on)
+        cft = core.CloudFormationTemplate()
+        cft.resources.test = res
+
+        # The output should have the metadata attached
+        expected_out = dedent(u'''\
+        {
+          "Type": "AWS::Resource::Test",
+          "DependsOn": "Location2"
+        }''')
+        self.assertEqual(unicode(cft.resources.test), expected_out)
+
+    def test_resource_with_update_policy(self):
+        update_policy = core.UpdatePolicy(
+            {"MaxBatchSize": "Location1", "MinInstancesInService": "Location2", "PauseTime": "30"})
+        res = core.Resource('TestResource', 'AWS::Resource::Test', None, update_policy)
+        cft = core.CloudFormationTemplate()
+        cft.resources.test = res
+
+        # The output should have the metadata attached
+        expected_out = dedent(u'''\
+        {
+          "Type": "AWS::Resource::Test",
+          "UpdatePolicy": {
+            "PauseTime": "30",
+            "MaxBatchSize": "Location1",
+            "MinInstancesInService": "Location2"
+          }
+        }''')
+        self.assertEqual(unicode(cft.resources.test), expected_out)
+
+    def test_resource_with_extended_attributes(self):
+        update_policy = core.UpdatePolicy({"Object1": "Location1", "Object2": "Location2"})
+        metadata = core.Metadata({"Object1": "Location1", "Object2": "Location2"})
+        deletion_policy = core.DeletionPolicy("Retain")
+        depends_on = core.DependsOn("Location2")
+        res = core.Resource('TestResource', 'AWS::Resource::Test', None,
+                            [metadata, update_policy, deletion_policy, depends_on])
+        cft = core.CloudFormationTemplate()
+        cft.resources.test = res
+
+        # The output should have the metadata attached
+        expected_out = dedent(u'''\
+        {
+          "Type": "AWS::Resource::Test",
+          "Metadata": {
+            "Object1": "Location1",
+            "Object2": "Location2"
+          },
+          "UpdatePolicy": {
+            "Object1": "Location1",
+            "Object2": "Location2"
+          },
+          "DeletionPolicy": "Retain",
+          "DependsOn": "Location2"
         }''')
         self.assertEqual(unicode(cft.resources.test), expected_out)
 
