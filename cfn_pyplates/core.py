@@ -34,7 +34,9 @@ __all__ = [
     'Resource',
     'Parameter',
     'Output',
-    'Metadatums',
+    'DependsOn',
+    'DeletionPolicy',
+    'UpdatePolicy',
     'Metadata',
     'ec2_tags',
 ]
@@ -186,7 +188,6 @@ class CloudFormationTemplate(JSONableDict):
         # Tack on all the base template elements that a CF template can handle
         # at easy-to-reach parameters
         self.parameters = Parameters()
-        self.metadata = Metadatums()
         self.mappings = Mappings()
         self.resources = Resources()
         self.outputs = Outputs()
@@ -292,10 +293,11 @@ class Resource(JSONableDict):
         type: The type of this resource
         properties: Optional properties mapping to apply to this resource,
             can be an instance of ``JSONableDict`` or just plain old ``dict``
+        attributes: Optional (on of 'DependsOn', 'DeletionPolicy', 'Metadata', 'UpdatePolicy' or a list of 2 or more)
 
     '''
 
-    def __init__(self, name, type, properties=None, metadata=None):
+    def __init__(self, name, type, properties=None, attributes=[]):
         update_dict = {'Type': type}
         super(Resource, self).__init__(update_dict, name)
         if properties:
@@ -305,9 +307,25 @@ class Resource(JSONableDict):
             except AddRemoveError:
                 # If not, coerce it
                 self.add(Properties(properties))
-        if metadata:
-            # Assume we've got a JSONableDict
-            self.add(metadata)
+        if attributes:
+            if self.__is_attribute(attributes):
+                self.add(attributes)
+            elif isinstance(attributes, list):
+                for i in attributes:
+                    if isinstance(i, JSONableDict) and self.__is_attribute(i):
+                        self.add(i)
+
+    def __is_attribute(self, attribute):
+        """Is the Object a valid Resource Attribute?
+        :param attribute: the object under test
+        """
+        if isinstance(attribute, list):
+            for i in attribute:
+                self.__is_attribute(i)
+        elif attribute.__class__.__name__ in ['Metadata', 'UpdatePolicy']:
+            self.add(attribute)
+        elif attribute.__class__.__name__ in ['DependsOn', 'DeletionPolicy']:
+            self.update({attribute.__class__.__name__: attribute.value})
 
 
 class Parameter(JSONableDict):
@@ -364,7 +382,7 @@ class Output(JSONableDict):
 class Metadata(JSONableDict):
     '''A CFN Output [#cfn-outputs]_
 
-    Used in the :class:`cfn_pyplates.core.Metadata`, The Metadata attribute enables you to associate
+    Used in the :class:`cfn_pyplates.core.Resource`, The Metadata attribute enables you to associate
     structured data with a resource. By adding a Metadata attribute to a resource, you can add data in
     JSON format to the resource declaration. In addition, you can use intrinsic functions (such as GetAtt and Ref),
     parameters, and pseudo parameters within the Metadata attribute to add those interpreted values.
@@ -374,14 +392,71 @@ class Metadata(JSONableDict):
     here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-metadata.html
 
     Args:
-        name: The unique name of the output
-        value: The value the output should return
-        description: An optional description of this output
+        properties: The unique name of the output
 
     '''
 
     def __init__(self, properties=None):
         super(Metadata, self).__init__(properties, "Metadata")
+
+
+class DependsOn(object):
+    '''A CFN Output [#cfn-outputs]_
+
+    Used in the :class:`cfn_pyplates.core.Resource`, The DependsOn attribute enables you to specify
+    that the creation of a specific resource follows another
+
+    More information for DependsOn Attribute can be found here:
+
+    here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html
+
+    Args:
+        properties: The unique name of the output
+
+    '''
+
+    def __init__(self, policy=None):
+        if policy:
+            self.value = policy
+
+
+class DeletionPolicy(object):
+    '''A CFN Output [#cfn-outputs]_
+
+    Used in the :class:`cfn_pyplates.core.Resource`, The DeletionPolicy attribute enables you to 
+    specify how AWS CloudFormation handles the resource deletion.
+
+    More information for DeletionPolicy Attribute can be found here:
+
+    here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+
+    Args:
+        properties: The unique name of the output
+
+    '''
+
+    def __init__(self, policy=None):
+        if policy:
+            self.value = str(policy)
+
+
+class UpdatePolicy(JSONableDict):
+    '''A CFN Output [#cfn-outputs]_
+
+    Used in the :class:`cfn_pyplates.core.Resource`, The UpdatePolicy attribute enables you to 
+    specify how AWS CloudFormation handles rolling updates for a particular resource.
+
+    More information for UpdatePolicy Attribute can be found here:
+
+    here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html
+
+    Args:
+        properties: The unique name of the output
+
+    '''
+
+    def __init__(self, properties=None):
+        super(UpdatePolicy, self).__init__(properties, "UpdatePolicy")
 
 
 
