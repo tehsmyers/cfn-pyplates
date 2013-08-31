@@ -54,7 +54,7 @@ The output certainly makes a mess of the script file, but that's really a discus
 .. literalinclude:: examples/useful/out.json
     :language: json
 
-Adding Metadata to Resources
+Adding Metadata and Other Attributes to Resources
 ==================================
 Cloudformation provides extensive support for Metadata that may be used to associate structured data with a resource.
 
@@ -64,17 +64,24 @@ Cloudformation provides extensive support for Metadata that may be used to assoc
 
 
 .. rubric:: s3.py
-.. literalinclude:: examples/metadata/s3.py
+.. literalinclude:: examples/resource_attributes/s3.py
 
 .. rubric:: out.json
-.. literalinclude:: examples/metadata/s3.json
+.. literalinclude:: examples/resource_attributes/s3.json
     :language: json
 
 .. rubric:: ec2_instance.py
-.. literalinclude:: examples/metadata/ec2_instance.py
+.. literalinclude:: examples/resource_attributes/ec2_instance.py
 
 .. rubric:: out.json
-.. literalinclude:: examples/metadata/ec2_instance.json
+.. literalinclude:: examples/resource_attributes/ec2_instance.json
+    :language: json
+
+.. rubric:: ec2_instance_attribs.py
+.. literalinclude:: examples/resource_attributes/ec2_instance_attribs.py
+
+.. rubric:: out.json
+.. literalinclude:: examples/resource_attributes/ec2_instance_attribs.json
     :language: json
 
 

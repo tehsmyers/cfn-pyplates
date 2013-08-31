@@ -27,7 +27,7 @@ setup(
             'cfn_py_generate = cfn_pyplates.cli:generate',
         ],
     },
-    license='LICENSE',
+    license=open('LICENSE').read(),
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Console',

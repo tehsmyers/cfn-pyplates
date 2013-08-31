@@ -50,3 +50,6 @@ Sean Myers <sean.dst@gmail.com>
 Jon Woodbury <jpwoodbu@mybox.org>
     Did a lot of practical work with pyplates; all of the examples in these
     docs are based on his early work with pyplates
+
+GitHub Contributors
+    https://github.com/seandst/cfn-pyplates/graphs/contributors
