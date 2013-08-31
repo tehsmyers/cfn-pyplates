@@ -363,7 +363,7 @@ class Output(JSONableDict):
 
     More information for Output options can be found here:
 
-    here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
+    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
 
     Args:
         name: The unique name of the output
@@ -389,7 +389,7 @@ class Metadata(JSONableDict):
 
     More information for Metadata can be found here:
 
-    here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-metadata.html
+    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-metadata.html
 
     Args:
         properties: The unique name of the output
@@ -408,7 +408,7 @@ class DependsOn(object):
 
     More information for DependsOn Attribute can be found here:
 
-    here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html
+    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html
 
     Args:
         properties: The unique name of the output
@@ -423,12 +423,12 @@ class DependsOn(object):
 class DeletionPolicy(object):
     '''A CFN Output [#cfn-outputs]_
 
-    Used in the :class:`cfn_pyplates.core.Resource`, The DeletionPolicy attribute enables you to 
+    Used in the :class:`cfn_pyplates.core.Resource`, The DeletionPolicy attribute enables you to
     specify how AWS CloudFormation handles the resource deletion.
 
     More information for DeletionPolicy Attribute can be found here:
 
-    here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
 
     Args:
         properties: The unique name of the output
@@ -443,12 +443,12 @@ class DeletionPolicy(object):
 class UpdatePolicy(JSONableDict):
     '''A CFN Output [#cfn-outputs]_
 
-    Used in the :class:`cfn_pyplates.core.Resource`, The UpdatePolicy attribute enables you to 
+    Used in the :class:`cfn_pyplates.core.Resource`, The UpdatePolicy attribute enables you to
     specify how AWS CloudFormation handles rolling updates for a particular resource.
 
     More information for UpdatePolicy Attribute can be found here:
 
-    here <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html
+    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html
 
     Args:
         properties: The unique name of the output
