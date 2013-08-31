@@ -140,6 +140,8 @@ class JSONableDict(OrderedDict):
         else:
             raise AddRemoveError
 
+        return child
+
     def remove(self, child):
         '''Remove a child node
 

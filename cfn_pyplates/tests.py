@@ -38,6 +38,9 @@ class JSONableDictTestCase(unittest.TestCase):
         tr2 = TestResource({'Id': 2})
         # Tack the TestResource onto the template
         bm.add(tr1)
+        # .add should return the added resource
+        added_resource = bm.add(tr1)
+        self.assertIs(added_resource, tr1)
         # Add a child to tr1 *after* adding it to bm
         tr1.add(tr2)
         # Then make sure tr2 is visible from the template
