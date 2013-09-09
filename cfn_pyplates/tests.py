@@ -322,6 +322,19 @@ class IntrinsicFuncsFailureCase(unittest.TestCase):
 
 
 class MiscElementsTestCase(unittest.TestCase):
+    def setUp(self):
+        mapping_a = core.Mapping('MappingKey',
+                                 {'keya': 'valuea',
+                                  'keyb': 'valueb'})
+
+        mapping_b = core.Mapping('MappingKeyBee',
+                                 {'key1': 'value1',
+                                  'key2': 'value2'})
+
+        self.cft = core.CloudFormationTemplate('This is a test')
+        self.cft.mappings.add(mapping_a)
+        self.cft.mappings.add(mapping_b)
+
     def test_resource_element(self):
         resource = core.Resource('ResourceName',
             'AWS::Testing::ResourceType',
@@ -352,10 +365,32 @@ class MiscElementsTestCase(unittest.TestCase):
         self.assertEqual(resource['Properties']['Key1'], 'Value1')
         self.assertEqual(resource['Properties']['Key2'], 'Value2')
 
+
     def test_parameter_element(self):
         parameter = core.Parameter('ParameterName',
             'String',
             {'Key': 'Value'})
+
+    def test_add_mapping(self):
+        self.assertEqual(self.cft.mappings['MappingKey']['keyb'], 'valueb')
+        self.assertEqual(self.cft.mappings['MappingKeyBee']['key1'], 'value1')
+
+    def test_render_mapping(self):
+        expected = """{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This is a test",
+  "Mappings": {
+    "MappingKey": {
+      "keyb": "valueb",
+      "keya": "valuea"
+    },
+    "MappingKeyBee": {
+      "key2": "value2",
+      "key1": "value1"
+    }
+  }
+}"""
+        self.assertEquals(dedent(unicode(self.cft)), expected)
 
     def test_output_element(self):
         output = core.Output('OutputName',

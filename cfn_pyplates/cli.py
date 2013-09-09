@@ -133,3 +133,9 @@ WARNING!
 
     # Explicitly return a posixy "EVERYTHING IS OKAY" 0
     return 0
+
+# this allows execution with python -m cfn_pyplates.cli
+# which is nice when developing. I presume the main authors approach
+# this another way, but it's something that works for me!
+if __name__=='__main__':
+    generate()

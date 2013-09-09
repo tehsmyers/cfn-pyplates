@@ -19,7 +19,7 @@ import json
 
 from ordereddict import OrderedDict
 
-from cfn_pyplates.exceptions import AddRemoveError, Error
+from cfn_pyplates.exceptions import AddRemoveError
 
 aws_template_format_version = '2010-09-09'
 
@@ -31,6 +31,7 @@ __all__ = [
     'Resources',
     'Outputs',
     'Properties',
+    'Mapping',
     'Resource',
     'Parameter',
     'Output',
@@ -355,6 +356,30 @@ class Parameter(JSONableDict):
         if properties is not None:
             update_dict.update(properties)
         super(Parameter, self).__init__(update_dict, name)
+
+
+class Mapping(JSONableDict):
+    '''A CFN Mapping [#cfn-mappings]_
+
+    Used in the :class:`cfn_pyplates.core.Mappings` container, a Mapping
+    defines mappings used within the Cloudformation template and is not
+    the same as a PyPlates options mapping.
+
+    More information for mapping options:
+
+    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/concept-mappings.html
+
+    Args:
+        name: The unique name of the mapping to add
+        mappings: The dictionary of mappings
+
+    '''
+
+    def __init__(self, name, mappings=None):
+        update_dict = {}
+        if mappings is not None:
+            update_dict.update(mappings)
+        super(Mapping, self).__init__(update_dict, name)
 
 
 class Output(JSONableDict):
