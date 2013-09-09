@@ -409,7 +409,7 @@ class Output(JSONableDict):
 class Metadata(JSONableDict):
     '''A CFN Output [#cfn-outputs]_
 
-    Used in the :class:`cfn_pyplates.core.Resource`,The Metadata attribute enables you to associate
+    Used in the :class:`cfn_pyplates.core.Resource`, The Metadata attribute enables you to associate
     structured data with a resource. By adding a Metadata attribute to a resource, you can add data in
     JSON format to the resource declaration. In addition, you can use intrinsic functions (such as GetAtt and Ref),
     parameters, and pseudo parameters within the Metadata attribute to add those interpreted values.
