@@ -1,0 +1,9 @@
+distribute==0.6.34
+docopt==0.6.1
+ordereddict==1.1
+PyYAML==3.10
+schema==0.2.0
+verlib==0.1
+
+# ReThought utilities require the following
+Jinja2==2.7.1

@@ -37,6 +37,15 @@ template and resources, with the goal of generating cloudformation
 templates based on input python templates (pyplates!) that reflect the
 cloudformation template hierarchy.
 
+Why this fork?
+==============
+
+We had some changes we wanted to make and have made these in this fork with
+the intention of passing them up stream through PRs when such changes are
+aligned with the interests of the upstream authors.
+
+We will seek to bring upstream changes into this branch regularly.
+
 Features
 ========
 
@@ -50,3 +59,10 @@ Features
   etc.
 - Converts intuitiviely-written python dictionaries into JSON templates,
   without having to worry about nesting or order-of-operations issues.
+
+RTL Features
+============
+
+- Allows templating of scripts to be included in UserData arguments etc
+  using Jinja2. Features allow natural creation of templates that translate
+  to the appropriate format for inclusion in a Cloudformation template.

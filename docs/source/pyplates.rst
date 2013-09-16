@@ -182,6 +182,67 @@ And here are the generated templates for CloudFormation:
     examples/options/testing
     examples/options/production
 
+UserData templating
+===================
+
+Embedding scripts in UserData (and other) attributes makes for rather
+bulky source, both in PyPlates and Cloudformation templates, unless
+those scripts can be externalised. Clearly we have plenty of options to do
+this with Python, from simply reading these into the pyplate with
+``open(...).read()`` to something more advanced.
+
+In practice not only do we want to template a script, but that script might
+include Cloudformation functions such as Fn::Getattr that need to be evaluated
+by the Cloudformation engine. These functions cannot be embedded in strings
+and so the reason for having Fn::Join in templates to build up file contents
+by concatenating strings and these functions.
+
+``cfn_pyplates.utils.templated_read`` allows you to create a template that
+is processed automatically to the right form with no effort. From the code
+documentation we have an example.
+
+File template::
+ 
+  # snippet of script which uses Jinja2 elements...
+  $CFN_ROOT/cfn-init -s {{ stack_id }} -r {{ resource_name }} \
+    --region {{ aws_region }} || error_exit 'Failed to run cfn-init'
+
+
+In the PyPlates code::
+
+  # building up a Properties dict...
+  ...
+  'UserData':
+  templated_read(
+      open('my_template_script.sh', 'rt'),
+      {'resource_name': 'MyWebServer',
+       'stack_id': ref('AWS::StackId'),
+       'aws_region': ref('AWS::Region')
+       }),
+  ...
+
+After processing, in the Cloudformation template::
+
+    "UserData": {
+      "Fn::Base64": {
+        "Fn::Join": [
+          "",
+          [
+            "$CFN_ROOT/cfn-init -s ",
+            {
+              "Ref": "AWS::StackId"
+            },
+            " -r MyWebServer --region ",
+            {
+              "Ref": "AWS::Region"
+            },
+            " || error_exit 'Failed to run cfn-init'"
+          ]
+        ]
+      }
+    },
+
+
 Go forth, and pyplate
 =====================
 
