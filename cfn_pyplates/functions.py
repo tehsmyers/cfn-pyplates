@@ -56,8 +56,10 @@ __all__ = [
     'ref',
 ]
 
+
 def base64(value):
-    '''The intrinsic function Fn::Base64 returns the Base64 representation of the input string.
+    '''The intrinsic function Fn::Base64 returns the Base64 representation of \
+    the input string.
 
     This function is typically used to pass encoded data to
     Amazon EC2 instances by way of the UserData property.
@@ -69,8 +71,10 @@ def base64(value):
     '''
     return {'Fn::Base64': value}
 
+
 def find_in_map(map_name, key, value):
-    '''The intrinsic function Fn::FindInMap returns the value of a key from a mapping declared in the Mappings section.
+    '''The intrinsic function Fn::FindInMap returns the value of a key from a \
+    mapping declared in the Mappings section.
 
     Args:
         map_name: The logical name of the mapping declared in the Mappings
@@ -88,8 +92,10 @@ def find_in_map(map_name, key, value):
     '''
     return {'Fn::FindInMap': [map_name, key, value]}
 
+
 def get_att(logical_name, attribute):
-    '''The intrinsic function Fn:GetAtt returns the value of an attribute from a resource in the template.
+    '''The intrinsic function Fn:GetAtt returns the value of an attribute from \
+    a resource in the template.
 
     Args:
         logical_name: The logical name of the resource that
@@ -104,8 +110,10 @@ def get_att(logical_name, attribute):
     '''
     return {'Fn::GetAtt': [logical_name, attribute]}
 
+
 def get_azs(region=''):
-    '''The intrinsic function Fn::GetAZs returns an array that lists all Availability Zones for the specified region.
+    '''The intrinsic function Fn::GetAZs returns an array that lists all \
+    Availability Zones for the specified region.
 
     Because customers have access to different Availability Zones, the
     intrinsic function Fn::GetAZs enables template authors to write
@@ -124,8 +132,10 @@ def get_azs(region=''):
     '''
     return {'Fn::GetAZs': region}
 
+
 def join(sep, *args):
-    '''The intrinsic function Fn::Join appends a set of values into a single value, separated by the specified delimiter.
+    '''The intrinsic function Fn::Join appends a set of values into a single \
+    value, separated by the specified delimiter.
 
     If a delimiter is the empty string, the set of values are
     concatenated with no delimiter.
@@ -147,6 +157,7 @@ def join(sep, *args):
     return {'Fn::Join': [sep, list(args)]}
 
 join._errmsg_needinput = 'Unable to join on one or less things!'
+
 
 def select(index, *args):
     '''The intrinsic function Fn::Select returns a single object from a list of objects by index.
@@ -179,15 +190,12 @@ def select(index, *args):
     except ValueError:
         raise IntrinsicFuncInputError(select._errmsg_int)
     if not args:
-        message = 'Unable to select from an empty list!'
         raise IntrinsicFuncInputError(select._errmsg_empty)
     if filter(lambda x: x is None, args):
-        message = 'List of selections include null values!'
         raise IntrinsicFuncInputError(select._errmsg_null)
     try:
         args[index]
     except IndexError:
-        message = 'Provided index is invalid!'
         raise IntrinsicFuncInputError(select._errmsg_index)
 
     return {'Fn::Select': [index, list(args)]}
@@ -196,6 +204,7 @@ select._errmsg_int = 'Index must be a number!'
 select._errmsg_empty = 'Unable to select from an empty list!'
 select._errmsg_null = 'List of selections include null values!'
 select._errmsg_index = 'Provided index is invalid!'
+
 
 def ref(logical_name):
     '''The intrinsic function Ref returns the value of the specified parameter or resource.
@@ -227,4 +236,3 @@ def ref(logical_name):
 
     '''
     return {'Ref': logical_name}
-

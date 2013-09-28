@@ -13,17 +13,17 @@
 '''CLI Entry points for handy bins
 
 Documentation for CLI methods defined in this file will be that method's
-usage information as seen on the command-line.'''
-import os
-import sys
+usage information as seen on the command-line.
 
+'''
 from docopt import docopt
-from schema import Schema, Use, Or, Optional
+from schema import Schema, Use, Or
 import yaml
 
 from cfn_pyplates import __version__, core, functions
 from cfn_pyplates.exceptions import Error
 from cfn_pyplates.options import OptionsMapping
+
 
 def _load_pyplate(pyplate, options_mapping=None):
     'Load a pyplate file object, and return a dict of its globals'
@@ -39,6 +39,7 @@ def _load_pyplate(pyplate, options_mapping=None):
     # Do the needful.
     exec pyplate in exec_namespace
     return exec_namespace
+
 
 def _find_cloudformationtemplate(pyplate):
     '''Find a CloudFormationTemplate in a pyplate
@@ -58,6 +59,7 @@ def _find_cloudformationtemplate(pyplate):
 def _open_writable(outfile_name):
     'Helper function so we can offload the opening and validation to Schema'
     return open(outfile_name, 'w')
+
 
 def generate():
     '''Generate CloudFormation JSON Template based on a Pyplate

@@ -10,6 +10,7 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 
+
 class Error(Exception):
     '''Base exception class for cfn_pyplates
 
@@ -34,6 +35,7 @@ class Error(Exception):
             # Error is being directly instantiated, set the message
             self.message = message
         self.args = (message,) + args
+
 
 class AddRemoveError(Error):
     '''Raised when attempting to attach weird things to a JSONableDict

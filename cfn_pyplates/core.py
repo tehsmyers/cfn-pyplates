@@ -42,6 +42,7 @@ __all__ = [
     'ec2_tags',
 ]
 
+
 class JSONableDict(OrderedDict):
     '''A dictionary that knows how to turn itself into JSON
 
@@ -296,7 +297,8 @@ class Resource(JSONableDict):
         type: The type of this resource
         properties: Optional properties mapping to apply to this resource,
             can be an instance of ``JSONableDict`` or just plain old ``dict``
-        attributes: Optional (on of 'DependsOn', 'DeletionPolicy', 'Metadata', 'UpdatePolicy' or a list of 2 or more)
+        attributes: Optional (on of 'DependsOn', 'DeletionPolicy',
+            'Metadata', 'UpdatePolicy' or a list of 2 or more)
 
     '''
 
@@ -409,10 +411,11 @@ class Output(JSONableDict):
 class Metadata(JSONableDict):
     '''A CFN Output [#cfn-outputs]_
 
-    Used in the :class:`cfn_pyplates.core.Resource`, The Metadata attribute enables you to associate
-    structured data with a resource. By adding a Metadata attribute to a resource, you can add data in
-    JSON format to the resource declaration. In addition, you can use intrinsic functions (such as GetAtt and Ref),
-    parameters, and pseudo parameters within the Metadata attribute to add those interpreted values.
+    Used in the :class:`cfn_pyplates.core.Resource`,The Metadata attribute enables you to associate
+    structured data with a resource. By adding a Metadata attribute to a resource, you can add data
+    in JSON format to the resource declaration. In addition, you can use intrinsic functions (such
+    as GetAtt and Ref), parameters, and pseudo parameters within the Metadata attribute to add those
+    interpreted values.
 
     More information for Metadata can be found here:
 
@@ -484,7 +487,6 @@ class UpdatePolicy(JSONableDict):
 
     def __init__(self, properties=None):
         super(UpdatePolicy, self).__init__(properties, "UpdatePolicy")
-
 
 
 def ec2_tags(tags):
