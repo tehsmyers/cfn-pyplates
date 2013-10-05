@@ -12,21 +12,133 @@
         "ImageId": "ami-c30360aa"
       },
       "Metadata": {
-        "files": {},
-        "commands": {},
-        "users": {},
-        "sources": {},
-        "groups": {},
-        "services": {},
-        "packages": {}
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "files": {
+              "/tmp/setup.mysql": {
+                "content": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "CREATE DATABASE ",
+                      {
+                        "Ref": "DBName"
+                      },
+                      ";\n",
+                      "CREATE USER '",
+                      {
+                        "Ref": "DBUsername"
+                      },
+                      "'@'localhost' IDENTIFIED BY '",
+                      {
+                        "Ref": "DBPassword"
+                      },
+                      "';\n",
+                      "GRANT ALL ON ",
+                      {
+                        "Ref": "DBName"
+                      },
+                      ".* TO '",
+                      {
+                        "Ref": "DBUsername"
+                      },
+                      "'@'localhost';\n",
+                      "FLUSH PRIVILEGES;\n"
+                    ]
+                  ]
+                },
+                "owner": "root",
+                "group": "root",
+                "mode": "000644"
+              }
+            },
+            "commands": {
+              "test": {
+                "test": "test ! -e ~/test.txt",
+                "ignoreErrors": "false",
+                "command": "echo \"$CFNTEST\" > test.txt",
+                "cwd": "~",
+                "env": {
+                  "CFNTEST": "I come from config1."
+                }
+              }
+            },
+            "users": {
+              "myUser": {
+                "uid": "50",
+                "groups": [
+                  "groupOne",
+                  "groupTwo"
+                ],
+                "homeDir": "/tmp"
+              }
+            },
+            "sources": {
+              "/etc/puppet": "https://github.com/user1/cfn-demo/tarball/master"
+            },
+            "groups": {
+              "groupTwo": {
+                "gid": "45"
+              },
+              "groupOne": {}
+            },
+            "services": {
+              "sysvinit": {
+                "nginx": {
+                  "files": [
+                    "/etc/nginx/nginx.conf"
+                  ],
+                  "sources": [
+                    "/var/www/html"
+                  ],
+                  "ensureRunning": "true",
+                  "enabled": "true"
+                },
+                "sendmail": {
+                  "ensureRunning": "false",
+                  "enabled": "false"
+                },
+                "php-fastcgi": {
+                  "ensureRunning": "true",
+                  "packages": {
+                    "yum": [
+                      "php",
+                      "spawn-fcgi"
+                    ]
+                  },
+                  "enabled": "true"
+                }
+              }
+            },
+            "packages": {
+              "rubygems": {
+                "chef": [
+                  "0.10.2"
+                ]
+              },
+              "yum": {
+                "httpd": [],
+                "php": [],
+                "wordpress": []
+              },
+              "rpm": {
+                "epel": "http://download.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm"
+              }
+            }
+          }
+        }
       },
       "UpdatePolicy": {
-        "PauseTime": "",
-        "MaxBatchSize": "",
-        "MinInstancesInService": ""
+        "AutoScalingRollingUpdate": {
+          "PauseTime": "PT12M5S",
+          "MaxBatchSize": "1",
+          "MinInstancesInService": "1"
+        }
       },
       "DeletionPolicy": "Retain",
-      "DependsOn": "myDB"
+      "DependsOn": {
+        "Ref": "myDB"
+      }
     }
   }
 }
