@@ -1,7 +1,7 @@
 # Copyright (c) 2013 MetaMetrics, Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
+# of this software and associated documentation files (the 'Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
@@ -10,10 +10,10 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 
-'''Core functionality and all required components of a working CFN template.
+"""Core functionality and all required components of a working CFN template.
 
 These are all available without preamble in a pyplate's global namespace.
-'''
+"""
 import inspect
 import json
 
@@ -44,7 +44,7 @@ __all__ = [
 
 
 class JSONableDict(OrderedDict):
-    '''A dictionary that knows how to turn itself into JSON
+    """A dictionary that knows how to turn itself into JSON
 
     Args:
         update_dict: A dictionary of values for prepopulating the JSONableDict
@@ -65,7 +65,7 @@ class JSONableDict(OrderedDict):
 
     Based on :class:`ordereddict.OrderedDict`, the order of keys is significant.
 
-    '''
+    """
     def __init__(self, update_dict=None, name=None):
         super(JSONableDict, self).__init__()
         self._name = name
@@ -115,10 +115,10 @@ class JSONableDict(OrderedDict):
         self._name = None
 
     name = property(_get_name, _set_name, _del_name)
-    '''Accessor to the ``name`` internals;
+    """Accessor to the ``name`` internals;
 
     Allows getting, settings, and deleting the name
-    '''
+    """
 
     @property
     def json(self):
@@ -126,7 +126,7 @@ class JSONableDict(OrderedDict):
         return self.to_json(indent=2, separators=(',', ': '))
 
     def add(self, child):
-        '''Add a child node
+        """Add a child node
 
         Args:
             child: An instance of JSONableDict
@@ -134,7 +134,7 @@ class JSONableDict(OrderedDict):
         Raises:
             AddRemoveError: :exc:`cfn_pyplates.exceptions.AddRemoveError`
 
-        '''
+        """
         if isinstance(child, JSONableDict):
             self.update(
                 {child.name: child}
@@ -145,7 +145,7 @@ class JSONableDict(OrderedDict):
         return child
 
     def remove(self, child):
-        '''Remove a child node
+        """Remove a child node
 
         Args:
             child: An instance of JSONableDict
@@ -153,24 +153,24 @@ class JSONableDict(OrderedDict):
         Raises:
             AddRemoveError: :exc:`cfn_pyplates.exceptions.AddRemoveError`
 
-        '''
+        """
         if isinstance(child, JSONableDict):
             del(self[child.name])
         else:
             raise AddRemoveError
 
     def to_json(self, *args, **kwargs):
-        '''Thin wrapper around the :func:`json.dumps` method.
+        """Thin wrapper around the :func:`json.dumps` method.
 
         Allows for passing any arguments that json.dumps would accept to
         completely customize the JSON output if desired.
 
-        '''
+        """
         return json.dumps(self, *args, **kwargs)
 
 
 class CloudFormationTemplate(JSONableDict):
-    '''The root element of a CloudFormation template [#cfn-template]_
+    """The root element of a CloudFormation template [#cfn-template]_
 
     Takes an option description string in the constructor
     Comes pre-loaded with all the subelements CloudFormation can stand:
@@ -180,7 +180,7 @@ class CloudFormationTemplate(JSONableDict):
     - Resources
     - Outputs
 
-    '''
+    """
     def __init__(self, description=None):
         super(CloudFormationTemplate, self).__init__({
             'AWSTemplateFormatVersion': aws_template_format_version,
@@ -199,13 +199,13 @@ class CloudFormationTemplate(JSONableDict):
     def __unicode__(self):
         # Before outputting to json, remove empty elements
         def predicate(obj):
-            '''getmembers predicate to find empty JSONableDict attributes attached to self
+            """getmembers predicate to find empty JSONableDict attributes attached to self
 
             CloudFormation doesn't like empty mappings for these top-level
             attributes, so any falsey JSONableDict that's at attribute on
             the CloudFormationTemplate instance needs to get removed
 
-            '''
+            """
             if isinstance(obj, JSONableDict) and not obj:
                 return True
         for attr, mapping in inspect.getmembers(self, predicate):
@@ -215,24 +215,24 @@ class CloudFormationTemplate(JSONableDict):
 
 
 class Metadatums(JSONableDict):
-    '''The base Container for metadatums used at stack creation [#cfn-metadata]_
+    """The base Container for metadatums used at stack creation [#cfn-metadata]_
 
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
-    '''
+    """
     pass
 
 
 # CloudFormationTemplate base elements
 class Parameters(JSONableDict):
-    '''The base Container for parameters used at stack creation [#cfn-parameters]_
+    """The base Container for parameters used at stack creation [#cfn-parameters]_
 
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
-    '''
+    """
     pass
 
 
 class Mappings(JSONableDict):
-    '''The base Container for stack option mappings [#cfn-mappings]_
+    """The base Container for stack option mappings [#cfn-mappings]_
 
     .. note::
 
@@ -240,29 +240,29 @@ class Mappings(JSONableDict):
         this is normally unused.
 
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
-    '''
+    """
     pass
 
 
 class Resources(JSONableDict):
-    '''The base Container for stack resources [#cfn-resources]_
+    """The base Container for stack resources [#cfn-resources]_
 
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
-    '''
+    """
     pass
 
 
 class Outputs(JSONableDict):
-    '''The base Container for stack outputs [#cfn-outputs]_
+    """The base Container for stack outputs [#cfn-outputs]_
 
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
-    '''
+    """
     pass
 
 
 # Other 'named' JSONableDicts
 class Properties(JSONableDict):
-    '''A properties mapping [#cfn-properties]_, used by various CFN declarations
+    """A properties mapping [#cfn-properties]_, used by various CFN declarations
 
     Can be found in:
 
@@ -271,12 +271,12 @@ class Properties(JSONableDict):
     - :class:`cfn_pyplates.core.Resource`
 
     Properties will be most commonly found in Resources
-    '''
+    """
     pass
 
 
 class Resource(JSONableDict):
-    '''A generic CFN Resource [#cfn-resource-types]_
+    """A generic CFN Resource [#cfn-resource-types]_
 
     Used in the :class:`cfn_pyplates.core.Resources` container.
 
@@ -300,7 +300,7 @@ class Resource(JSONableDict):
         attributes: Optional (on of 'DependsOn', 'DeletionPolicy',
             'Metadata', 'UpdatePolicy' or a list of 2 or more)
 
-    '''
+    """
 
     def __init__(self, name, type, properties=None, attributes=[]):
         update_dict = {'Type': type}
@@ -334,7 +334,7 @@ class Resource(JSONableDict):
 
 
 class Parameter(JSONableDict):
-    '''A CFN Parameter [#cfn-parameters]_
+    """A CFN Parameter [#cfn-parameters]_
 
     Used in the :class:`cfn_pyplates.core.Parameters` container, a Parameter
     will be used when the template is processed by CloudFormation to prompt the
@@ -349,7 +349,7 @@ class Parameter(JSONableDict):
         type: The type of this parameter
         properties: Optional properties mapping to apply to this parameter
 
-    '''
+    """
 
     def __init__(self, name, type, properties=None):
         # Just like a Resource, except the properties go in the
@@ -361,7 +361,7 @@ class Parameter(JSONableDict):
 
 
 class Mapping(JSONableDict):
-    '''A CFN Mapping [#cfn-mappings]_
+    """A CFN Mapping [#cfn-mappings]_
 
     Used in the :class:`cfn_pyplates.core.Mappings` container, a Mapping
     defines mappings used within the Cloudformation template and is not
@@ -375,7 +375,7 @@ class Mapping(JSONableDict):
         name: The unique name of the mapping to add
         mappings: The dictionary of mappings
 
-    '''
+    """
 
     def __init__(self, name, mappings=None):
         update_dict = {}
@@ -385,7 +385,7 @@ class Mapping(JSONableDict):
 
 
 class Output(JSONableDict):
-    '''A CFN Output [#cfn-outputs]_
+    """A CFN Output [#cfn-outputs]_
 
     Used in the :class:`cfn_pyplates.core.Outputs`, an Output entry describes
     a value to be shown when describe this stack using CFN API tools.
@@ -399,7 +399,7 @@ class Output(JSONableDict):
         value: The value the output should return
         description: An optional description of this output
 
-    '''
+    """
 
     def __init__(self, name, value, description=None):
         update_dict = {'Value': value}
@@ -409,7 +409,7 @@ class Output(JSONableDict):
 
 
 class Metadata(JSONableDict):
-    '''A CFN Output [#cfn-outputs]_
+    """A CFN Output [#cfn-outputs]_
 
     Used in the :class:`cfn_pyplates.core.Resource`,The Metadata attribute enables you to associate
     structured data with a resource. By adding a Metadata attribute to a resource, you can add data
@@ -424,14 +424,14 @@ class Metadata(JSONableDict):
     Args:
         properties: The unique name of the output
 
-    '''
+    """
 
     def __init__(self, properties=None):
-        super(Metadata, self).__init__(properties, "Metadata")
+        super(Metadata, self).__init__(properties, 'Metadata')
 
 
 class DependsOn(object):
-    '''A CFN Output [#cfn-outputs]_
+    """A CFN Output [#cfn-outputs]_
 
     Used in the :class:`cfn_pyplates.core.Resource`, The DependsOn attribute enables you to specify
     that the creation of a specific resource follows another
@@ -443,7 +443,7 @@ class DependsOn(object):
     Args:
         properties: The unique name of the output
 
-    '''
+    """
 
     def __init__(self, policy=None):
         if policy:
@@ -451,7 +451,7 @@ class DependsOn(object):
 
 
 class DeletionPolicy(object):
-    '''A CFN Output [#cfn-outputs]_
+    """A CFN Output [#cfn-outputs]_
 
     Used in the :class:`cfn_pyplates.core.Resource`, The DeletionPolicy attribute enables you to
     specify how AWS CloudFormation handles the resource deletion.
@@ -463,7 +463,7 @@ class DeletionPolicy(object):
     Args:
         properties: The unique name of the output
 
-    '''
+    """
 
     def __init__(self, policy=None):
         if policy:
@@ -471,7 +471,7 @@ class DeletionPolicy(object):
 
 
 class UpdatePolicy(JSONableDict):
-    '''A CFN Output [#cfn-outputs]_
+    """A CFN Output [#cfn-outputs]_
 
     Used in the :class:`cfn_pyplates.core.Resource`, The UpdatePolicy attribute enables you to
     specify how AWS CloudFormation handles rolling updates for a particular resource.
@@ -483,14 +483,14 @@ class UpdatePolicy(JSONableDict):
     Args:
         properties: The unique name of the output
 
-    '''
+    """
 
     def __init__(self, properties=None):
-        super(UpdatePolicy, self).__init__(properties, "UpdatePolicy")
+        super(UpdatePolicy, self).__init__(properties, 'UpdatePolicy')
 
 
 def ec2_tags(tags):
-    '''A container for Tags on EC2 Instances
+    """A container for Tags on EC2 Instances
 
     Tags are declared really verbosely in CFN templates, but we have
     opportunites in the land of python to keep things a little more
@@ -515,7 +515,7 @@ def ec2_tags(tags):
     Args:
         tags: A dictionary of tags to apply to an EC2 instance
 
-    '''
+    """
     tags_list = list()
     for key, value in tags.iteritems():
         tags_list.append({'Key': key, 'Value': value})

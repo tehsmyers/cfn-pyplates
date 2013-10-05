@@ -10,7 +10,7 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 
-'''Python wrappers for CloudFormation intrinsic functions [#cfn-functions]_
+"""Python wrappers for CloudFormation intrinsic functions [#cfn-functions]_
 
 These are all available without preamble in a pyplate's global namespace.
 
@@ -38,7 +38,7 @@ Notes:
     Documentation for the functions is verbatim from the AWS Docs
     [#cfn-intrinsic-functions], except where identifiers are changed
     to fit with normal python style.
-'''
+"""
 
 # Where needed, exception error messages are stored on the intrinsic function
 # wrappers to make testing the function failure cases very easy
@@ -58,7 +58,7 @@ __all__ = [
 
 
 def base64(value):
-    '''The intrinsic function Fn::Base64 returns the Base64 representation of \
+    """The intrinsic function Fn::Base64 returns the Base64 representation of \
     the input string.
 
     This function is typically used to pass encoded data to
@@ -68,12 +68,12 @@ def base64(value):
         value: The string value you want to convert to Base64
 
     Returns: The original string, in Base64 representation
-    '''
+    """
     return {'Fn::Base64': value}
 
 
 def find_in_map(map_name, key, value):
-    '''The intrinsic function Fn::FindInMap returns the value of a key from a \
+    """The intrinsic function Fn::FindInMap returns the value of a key from a \
     mapping declared in the Mappings section.
 
     Args:
@@ -89,30 +89,35 @@ def find_in_map(map_name, key, value):
         Most likely, using the python equivalent in a pyplate will be
         easier to both look at and maintain.
 
-    '''
+    """
     return {'Fn::FindInMap': [map_name, key, value]}
 
 
 def get_att(logical_name, attribute):
-    '''The intrinsic function Fn:GetAtt returns the value of an attribute from \
+    """The intrinsic function Fn:GetAtt returns the value of an attribute from \
     a resource in the template.
 
     Args:
         logical_name: The logical name of the resource that
             contains the attribute you want.
         attribute: The name of the resource-specific attribute
-            whose value you want. See the resource's reference page
+            whose value you want. See the resource's reference
+
+
+
+
+ page
             [#cfn-resources] for details about the attributes available
             for that resource type.
 
     Returns: The attribute value.
 
-    '''
+    """
     return {'Fn::GetAtt': [logical_name, attribute]}
 
 
 def get_azs(region=''):
-    '''The intrinsic function Fn::GetAZs returns an array that lists all \
+    """The intrinsic function Fn::GetAZs returns an array that lists all \
     Availability Zones for the specified region.
 
     Because customers have access to different Availability Zones, the
@@ -129,12 +134,12 @@ def get_azs(region=''):
             equivalent to specifying AWS::Region.
     Returns: The list of Availability Zones for the region.
 
-    '''
+    """
     return {'Fn::GetAZs': region}
 
 
 def join(sep, *args):
-    '''The intrinsic function Fn::Join appends a set of values into a single \
+    """The intrinsic function Fn::Join appends a set of values into a single \
     value, separated by the specified delimiter.
 
     If a delimiter is the empty string, the set of values are
@@ -150,7 +155,7 @@ def join(sep, *args):
 
     Returns: The combined string.
 
-    '''
+    """
     if len(args) < 2:
         raise IntrinsicFuncInputError(join._errmsg_needinput)
 
@@ -160,7 +165,7 @@ join._errmsg_needinput = 'Unable to join on one or less things!'
 
 
 def select(index, *args):
-    '''The intrinsic function Fn::Select returns a single object from a list of objects by index.
+    """The intrinsic function Fn::Select returns a single object from a list of objects by index.
 
     .. note:
         select is represented here "just in case".
@@ -184,7 +189,7 @@ def select(index, *args):
 
     Returns: The selected object.
 
-    '''
+    """
     try:
         index = int(index)
     except ValueError:
@@ -207,7 +212,7 @@ select._errmsg_index = 'Provided index is invalid!'
 
 
 def ref(logical_name):
-    '''The intrinsic function Ref returns the value of the specified parameter or resource.
+    """The intrinsic function Ref returns the value of the specified parameter or resource.
 
     When you are declaring a resource in a template and you need to
     specify another template resource by name, you can use the Ref to refer
@@ -234,5 +239,5 @@ def ref(logical_name):
 
     .. note:: You can also use Ref to add values to Output messages.
 
-    '''
+    """
     return {'Ref': logical_name}

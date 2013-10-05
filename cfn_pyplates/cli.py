@@ -10,12 +10,12 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 
-'''CLI Entry points for handy bins
+"""CLI Entry points for handy bins
 
 Documentation for CLI methods defined in this file will be that method's
 usage information as seen on the command-line.
 
-'''
+"""
 from docopt import docopt
 from schema import Schema, Use, Or
 import yaml
@@ -42,12 +42,12 @@ def _load_pyplate(pyplate, options_mapping=None):
 
 
 def _find_cloudformationtemplate(pyplate):
-    '''Find a CloudFormationTemplate in a pyplate
+    """Find a CloudFormationTemplate in a pyplate
 
     Goes through a pyplate namespace dict and returns the first
     CloudFormationTemplate it finds.
 
-    '''
+    """
     for key, value in pyplate.iteritems():
         if isinstance(value, core.CloudFormationTemplate):
             return value
@@ -62,7 +62,7 @@ def _open_writable(outfile_name):
 
 
 def generate():
-    '''Generate CloudFormation JSON Template based on a Pyplate
+    """Generate CloudFormation JSON Template based on a Pyplate
 
 Usage:
   cfpy_generate <pyplate> [<outfile>] [-o/--options=<options_mapping>]
@@ -93,7 +93,7 @@ WARNING!
   run, even potentailly harmful things.
 
   Be careful.
-'''
+"""
     args = docopt(generate.__doc__, version=__version__)
     scheme = Schema({
         '<pyplate>': Use(open),
