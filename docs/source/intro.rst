@@ -1,6 +1,21 @@
-..
-    This is copied into the README for displaying on github.
-    Try to keep the two files in sync :\
+============
+cfn-pyplates
+============
+
+Amazon Web Services CloudFormation templates, generated with Python!
+
+
+Where to get it
+===============
+
+- https://pypi.python.org/pypi/cfn-pyplates/
+- easy_install cfn-pyplates
+- pip install cfn-pyplates
+
+Doumentation
+============
+
+- https://cfn-pyplates.readthedocs.org/
 
 Intended Audience
 =================
@@ -33,4 +48,3 @@ Features
   etc.
 - Converts intuitiviely-written python dictionaries into JSON templates,
   without having to worry about nesting or order-of-operations issues.
-

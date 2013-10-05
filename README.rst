@@ -4,6 +4,11 @@ cfn-pyplates
 
 Amazon Web Services CloudFormation templates, generated with Python!
 
+..
+  Keep the README in-sync with intro.rst in the sphinx docs!
+  The travis image isn't really useful on readthedocs, and also causes
+  sphinx warnings, so it should be excluded.
+
 .. image:: https://travis-ci.org/seandst/cfn-pyplates.png
     :target: https://travis-ci.org/seandst/cfn-pyplates/
 
