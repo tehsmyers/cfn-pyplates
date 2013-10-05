@@ -55,10 +55,10 @@ The output certainly makes a mess of the script file, but that's really a discus
     :language: json
 
 Adding Metadata and Other Attributes to Resources
-==================================
+=================================================
 Cloudformation provides extensive support for Metadata that may be used to associate structured data with a resource.
 
-.. note:: 
+.. note::
 
     AWS CloudFormation does not validate the JSON in the Metadata attribute.
 
