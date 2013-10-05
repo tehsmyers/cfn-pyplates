@@ -19,21 +19,22 @@ See also:
 - https://github.com/seandst/cfn-pyplates/
 '''
 
-# Friendly PEP-386 version string
-__version__ = '0.3.0a1'
+__version__ = '0.3.0'
 
 import warnings
 
 try:
-    from verlib import NormalizedVersion
-    # Validates the version above, exposing the version parts for anyone
+    from semantic_version import Version
+
+    # Validates the version above, exposes the version parts for anyone
     # that might want to make decisions based on a normalized version tuple
-    version_parts = NormalizedVersion(__version__).parts
+    version = Version(__version__)
+    version_parts = tuple(version)
 except ImportError:
-    verlib_errormsg = '''
-    Failed to import verlib, version_parts will not be available
+    semver_errormsg = '''
+    Failed to import semantic_version, version_parts will not be available
 
     This should only happen during install, before dependencies are evaluated
     and installed.
     '''
-    warnings.warn(verlib_errormsg, ImportWarning)
+    warnings.warn(semver_errormsg, ImportWarning)

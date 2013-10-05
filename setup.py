@@ -17,7 +17,7 @@ setup(
         'ordereddict',
         'pyyaml',
         'schema',
-        'verlib',
+        'semantic-version',
     ],
     test_suite = 'tests',
     # Used for setup.py test, keep in sync with test-requirements.txt
