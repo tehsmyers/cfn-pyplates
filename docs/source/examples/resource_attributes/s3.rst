@@ -1,8 +1,0 @@
-s3.json
-================
-
-
-.. literalinclude:: s3.py
-
-.. literalinclude:: s3.json
-    :language: json

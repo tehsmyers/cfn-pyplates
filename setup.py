@@ -17,11 +17,11 @@ setup(
         'ordereddict',
         'pyyaml',
         'schema',
-        'unittest2',
-        'verlib',
+        'semantic-version',
     ],
-    test_suite = 'cfn_pyplates.tests',
-    tests_require = ['mock'],
+    test_suite = 'tests',
+    # Used for setup.py test, keep in sync with test-requirements.txt
+    tests_require = ['mock', 'unittest2'],
     entry_points={
         'console_scripts': [
             'cfn_py_generate = cfn_pyplates.cli:generate',

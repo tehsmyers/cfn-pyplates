@@ -1,9 +1,3 @@
-Pyplates: Python-generated cloudformation templates!
-====================================================
-
-.. image:: https://travis-ci.org/seandst/cfn-pyplates.png
-    :target: https://travis-ci.org/seandst/cfn-pyplates/
-
 .. include:: intro.rst
 
 Contents
@@ -14,6 +8,7 @@ Contents
 
     pyplates
     apiref
+    developing
 
 .. toctree::
     :hidden:
@@ -33,7 +28,7 @@ always intended to get it out for others to use once we were able to make
 the time. Normally, that means that it would never get done.
 
 MetaMetrics deserves special thanks for not just allowing this to be shared,
-but actively encouraging it publishing. If that sounds like a good place to
+but actively encouraging its publishing. If that sounds like a good place to
 work, that's because it *is* a good place to work.
 
 http://www.metametricsinc.com/job-openings/

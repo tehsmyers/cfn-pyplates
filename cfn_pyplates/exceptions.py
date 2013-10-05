@@ -10,8 +10,9 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 
+
 class Error(Exception):
-    '''Base exception class for cfn_pyplates
+    """Base exception class for cfn_pyplates
 
     A namespaced Exception subclass with explicit 'message' support.
     Will be handled at template generation, with the message being delivered
@@ -22,7 +23,7 @@ class Error(Exception):
         args: Any number of optional arguments, to be used as subclasses
             see fit.
 
-    '''
+    """
 
     message = 'An unknown error has occurred.'
 
@@ -35,25 +36,26 @@ class Error(Exception):
             self.message = message
         self.args = (message,) + args
 
+
 class AddRemoveError(Error):
-    '''Raised when attempting to attach weird things to a JSONableDict
+    """Raised when attempting to attach weird things to a JSONableDict
 
     Weird things, in this case, mean anything that isn't a JSONableDict
 
     Args:
         message: An optional message to package with the Error
 
-    '''
+    """
 
     message = 'Only subclasses of JSONableDict can be added or removed'
 
 
 class IntrinsicFuncInputError(Error):
-    '''Raised when passing bad input values to an intrinsic function
+    """Raised when passing bad input values to an intrinsic function
 
     Args:
         message: An optional message to package with the Error
 
-    '''
+    """
 
     message = 'Invalid arguments passed to intrinsic function'

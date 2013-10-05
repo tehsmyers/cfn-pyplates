@@ -15,6 +15,8 @@ from collections import defaultdict
 prompt_str = '''Key "{0}" not found in the supplied options mapping.
 You can enter it now (or leave blank for None/null):
 > '''
+
+
 class OptionsMapping(defaultdict):
     def __init__(self, *args, **kwargs):
         super(OptionsMapping, self).__init__(None, *args, **kwargs)

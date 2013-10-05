@@ -12,13 +12,17 @@
         "ImageId": "ami-c30360aa"
       },
       "Metadata": {
-        "files": {},
-        "commands": {},
-        "users": {},
-        "sources": {},
-        "groups": {},
-        "services": {},
-        "packages": {}
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "files": {},
+            "commands": {},
+            "users": {},
+            "sources": {},
+            "groups": {},
+            "services": {},
+            "packages": {}
+          }
+        }
       }
     }
   }

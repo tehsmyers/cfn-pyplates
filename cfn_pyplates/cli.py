@@ -10,20 +10,20 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 
-'''CLI Entry points for handy bins
+"""CLI Entry points for handy bins
 
 Documentation for CLI methods defined in this file will be that method's
-usage information as seen on the command-line.'''
-import os
-import sys
+usage information as seen on the command-line.
 
+"""
 from docopt import docopt
-from schema import Schema, Use, Or, Optional
+from schema import Schema, Use, Or
 import yaml
 
 from cfn_pyplates import __version__, core, functions
 from cfn_pyplates.exceptions import Error
 from cfn_pyplates.options import OptionsMapping
+
 
 def _load_pyplate(pyplate, options_mapping=None):
     'Load a pyplate file object, and return a dict of its globals'
@@ -40,13 +40,14 @@ def _load_pyplate(pyplate, options_mapping=None):
     exec pyplate in exec_namespace
     return exec_namespace
 
+
 def _find_cloudformationtemplate(pyplate):
-    '''Find a CloudFormationTemplate in a pyplate
+    """Find a CloudFormationTemplate in a pyplate
 
     Goes through a pyplate namespace dict and returns the first
     CloudFormationTemplate it finds.
 
-    '''
+    """
     for key, value in pyplate.iteritems():
         if isinstance(value, core.CloudFormationTemplate):
             return value
@@ -59,8 +60,9 @@ def _open_writable(outfile_name):
     'Helper function so we can offload the opening and validation to Schema'
     return open(outfile_name, 'w')
 
+
 def generate():
-    '''Generate CloudFormation JSON Template based on a Pyplate
+    """Generate CloudFormation JSON Template based on a Pyplate
 
 Usage:
   cfpy_generate <pyplate> [<outfile>] [-o/--options=<options_mapping>]
@@ -91,7 +93,7 @@ WARNING!
   run, even potentailly harmful things.
 
   Be careful.
-'''
+"""
     args = docopt(generate.__doc__, version=__version__)
     scheme = Schema({
         '<pyplate>': Use(open),
