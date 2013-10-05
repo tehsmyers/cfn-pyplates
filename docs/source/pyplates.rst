@@ -63,6 +63,9 @@ Cloudformation provides extensive support for Metadata that may be used to assoc
     AWS CloudFormation does not validate the JSON in the Metadata attribute.
 
 
+Adding Metadata to an S3 bucket
+-------------------------------
+
 .. rubric:: s3.py
 .. literalinclude:: examples/resource_attributes/s3.py
 
@@ -70,12 +73,18 @@ Cloudformation provides extensive support for Metadata that may be used to assoc
 .. literalinclude:: examples/resource_attributes/s3.json
     :language: json
 
+Adding Metadata to an EC2 instance
+----------------------------------
+
 .. rubric:: ec2_instance.py
 .. literalinclude:: examples/resource_attributes/ec2_instance.py
 
 .. rubric:: out.json
 .. literalinclude:: examples/resource_attributes/ec2_instance.json
     :language: json
+
+Practical Metadata example for bootstrapping an instance
+--------------------------------------------------------
 
 .. rubric:: ec2_instance_attribs.py
 .. literalinclude:: examples/resource_attributes/ec2_instance_attribs.py

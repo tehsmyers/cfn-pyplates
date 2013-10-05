@@ -1,9 +1,3 @@
-Pyplates: Python-generated cloudformation templates!
-====================================================
-
-.. image:: https://travis-ci.org/seandst/cfn-pyplates.png
-    :target: https://travis-ci.org/seandst/cfn-pyplates/
-
 .. include:: intro.rst
 
 Contents

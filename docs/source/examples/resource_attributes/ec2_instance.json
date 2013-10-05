@@ -1,29 +1,29 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "A slightly more useful template.",
-    "Resources": {
-        "MyInstance": {
-            "Type": "AWS::EC2::Instance",
-            "Properties": {
-                "UserData": {
-                    "Fn::Base64": "#!/bin/bash\n\necho \"You can put your userdata script right here!\"\n"
-                },
-                "InstanceType": "m1.small",
-                "ImageId": "ami-c30360aa"
-            },
-            "Metadata": {
-                "AWS::CloudFormation::Init": {
-                    "config": {
-                        "files": {},
-                        "commands": {},
-                        "users": {},
-                        "sources": {},
-                        "groups": {},
-                        "services": {},
-                        "packages": {}
-                    }
-                }
-            }
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "A slightly more useful template.",
+  "Resources": {
+    "MyInstance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "UserData": {
+          "Fn::Base64": "#!/bin/bash\n\necho \"You can put your userdata script right here!\"\n"
+        },
+        "InstanceType": "m1.small",
+        "ImageId": "ami-c30360aa"
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "files": {},
+            "commands": {},
+            "users": {},
+            "sources": {},
+            "groups": {},
+            "services": {},
+            "packages": {}
+          }
         }
+      }
     }
+  }
 }
