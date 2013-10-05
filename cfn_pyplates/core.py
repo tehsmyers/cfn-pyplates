@@ -497,7 +497,8 @@ def ec2_tags(tags):
     sane.
 
     So we can turn the
-    `AWS EC2 Tags example <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-tags.html>`_
+    `AWS EC2 Tags example <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/\
+        aws-properties-ec2-tags.html>`_
     from this::
 
         "Tags": [
