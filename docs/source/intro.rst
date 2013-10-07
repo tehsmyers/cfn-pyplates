@@ -12,8 +12,8 @@ Where to get it
 - easy_install cfn-pyplates
 - pip install cfn-pyplates
 
-Doumentation
-============
+Documentation
+=============
 
 - https://cfn-pyplates.readthedocs.org/
 
