@@ -38,3 +38,6 @@ except ImportError:
     and installed.
     '''
     warnings.warn(semver_errormsg, ImportWarning)
+
+from .core import *
+from .functions import *
