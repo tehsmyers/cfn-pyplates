@@ -198,17 +198,12 @@ def select(index, *args):
         raise IntrinsicFuncInputError(select._errmsg_empty)
     if filter(lambda x: x is None, args):
         raise IntrinsicFuncInputError(select._errmsg_null)
-    try:
-        args[index]
-    except IndexError:
-        raise IntrinsicFuncInputError(select._errmsg_index)
 
     return {'Fn::Select': [index, list(args)]}
 
 select._errmsg_int = 'Index must be a number!'
 select._errmsg_empty = 'Unable to select from an empty list!'
 select._errmsg_null = 'List of selections include null values!'
-select._errmsg_index = 'Provided index is invalid!'
 
 
 def ref(logical_name):

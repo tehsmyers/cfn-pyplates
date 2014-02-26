@@ -74,9 +74,3 @@ class IntrinsicFuncsFailureCase(unittest.TestCase):
             functions.select(0, '', None)
             self.assertEqual(ctx.exception.message,
                 functions.select._errmsg_null)
-
-    def test_select_index(self):
-        with self.assertRaises(exceptions.IntrinsicFuncInputError) as ctx:
-            functions.select(2, '', '')
-            self.assertEqual(ctx.exception.message,
-                functions.select._errmsg_index)
