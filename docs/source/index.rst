@@ -7,8 +7,11 @@ Contents
     :maxdepth: 2
 
     pyplates
+    advanced
     apiref
     developing
+
+
 
 .. toctree::
     :hidden:
