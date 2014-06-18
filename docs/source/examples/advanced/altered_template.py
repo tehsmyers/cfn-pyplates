@@ -12,7 +12,8 @@ class AlteredTemplate(basetemplate.BaseTemplate):
         self.add_bucket()
 
     def add_bucket(self):
-        """This will add a bucket using the custom CORS configuration to the StaticFiles."""
+        """This will add a bucket using the base template, and then add a custom CORS 
+        configuration to it."""
 
         super(AlteredTemplate, self).add_bucket()
         self.resources['StaticFiles']['Properties']['CorsConfiguration'] = {
