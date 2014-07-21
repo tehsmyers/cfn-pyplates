@@ -40,6 +40,9 @@ __all__ = [
     'UpdatePolicy',
     'Metadata',
     'ec2_tags',
+    'Conditions',
+    'Condition',
+    'ConditionItem',
 ]
 
 
@@ -179,6 +182,7 @@ class CloudFormationTemplate(JSONableDict):
     - Mappings
     - Resources
     - Outputs
+    - Conditions
 
     """
     def __init__(self, description=None):
@@ -195,6 +199,7 @@ class CloudFormationTemplate(JSONableDict):
         self.mappings = Mappings()
         self.resources = Resources()
         self.outputs = Outputs()
+        self.conditions = Conditions()
 
     def __unicode__(self):
         # Before outputting to json, remove empty elements
@@ -259,6 +264,13 @@ class Outputs(JSONableDict):
     """
     pass
 
+class Conditions(JSONableDict):
+    """The base Container for stack conditions used at stack creation [#cfn-conditions]_
+        
+    Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
+    """
+    pass
+
 
 # Other 'named' JSONableDicts
 class Properties(JSONableDict):
@@ -297,7 +309,7 @@ class Resource(JSONableDict):
         type: The type of this resource
         properties: Optional properties mapping to apply to this resource,
             can be an instance of ``JSONableDict`` or just plain old ``dict``
-        attributes: Optional (on of 'DependsOn', 'DeletionPolicy',
+        attributes: Optional (one of 'Condition', 'DependsOn', 'DeletionPolicy',
             'Metadata', 'UpdatePolicy' or a list of 2 or more)
 
     """
@@ -329,7 +341,7 @@ class Resource(JSONableDict):
                 self._is_attribute(i)
         elif attribute.__class__.__name__ in ['Metadata', 'UpdatePolicy']:
             self.add(attribute)
-        elif attribute.__class__.__name__ in ['DependsOn', 'DeletionPolicy']:
+        elif attribute.__class__.__name__ in ['DependsOn', 'DeletionPolicy', 'Condition']:
             self.update({attribute.__class__.__name__: attribute.value})
 
 
@@ -487,6 +499,53 @@ class UpdatePolicy(JSONableDict):
 
     def __init__(self, properties=None):
         super(UpdatePolicy, self).__init__(properties, 'UpdatePolicy')
+
+
+class Condition(object):
+    """A CFN Output [#cfn-outputs]_
+    
+    Used in the :class:`cfn_pyplates.core.Conditions`, The Condition attribute enables you to
+    conditionally create resources based on the result of a ConditionItem.
+    
+    More information for Condition Attribute can be found here:
+    
+    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html
+    
+    Args:
+    properties: The unique name of ConditionItem
+    
+    """
+    
+    def __init__(self, policy=None):
+        if policy:
+            self.value = policy
+
+
+class ConditionItem(JSONableDict):
+    """A CFN Parameter [#cfn-outputs]_
+ 
+    Used in the :class:`cfn_pyplates.core.Condition` container, a ConditionItem
+    will be used when the template is processed by CloudFormation so you can define which resources are
+    created and how they're configured for each environment type.
+    
+    More information for ConditionItem options:
+    
+    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-conditions.html
+    
+    Args:
+    name: The unique name of the ConditionItem to add
+    type: The type of this parameter
+    properties: The Intrinsic Conditional function
+    
+    """
+
+    def __init__(self, name, type, conditions=None):
+        # Just like a Resource, except the properties go in the
+        # update_dict, not a named key.
+        update_dict = {}
+        if conditions is not None:
+            update_dict.update(conditions)
+        super(ConditionItem, self).__init__(update_dict, name)
 
 
 def ec2_tags(tags):
