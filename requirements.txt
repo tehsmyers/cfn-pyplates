@@ -4,4 +4,3 @@ ordereddict
 pbr
 pyyaml
 schema
-semantic-version

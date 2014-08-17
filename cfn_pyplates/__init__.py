@@ -18,23 +18,5 @@ See also:
 - https://cfn-pyplates.readthedocs.org/ (you might already be here)
 - https://github.com/seandst/cfn-pyplates/
 '''
-
-__version__ = '0.3.1'
-
-import warnings
-
-try:
-    from semantic_version import Version
-
-    # Validates the version above, exposes the version parts for anyone
-    # that might want to make decisions based on a normalized version tuple
-    version = Version(__version__)
-    version_parts = tuple(version)
-except ImportError:
-    semver_errormsg = '''
-    Failed to import semantic_version, version_parts will not be available
-
-    This should only happen during install, before dependencies are evaluated
-    and installed.
-    '''
-    warnings.warn(semver_errormsg, ImportWarning)
+# inject modules into the cfn_pyplates namespace
+from cfn_pyplates import cli, core, exceptions, functions, options  # NOQA
