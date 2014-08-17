@@ -268,6 +268,7 @@ def c_ref(condition_name):
         * A reference to the named condition
 
     """
+    return {'Condition': condition_name}
 
 
 def _validate_logical_condition_counts(fn, conditions):
