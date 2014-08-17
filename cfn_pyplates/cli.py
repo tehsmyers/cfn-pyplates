@@ -20,7 +20,7 @@ from docopt import docopt
 from schema import Schema, Use, Or
 import yaml
 
-from cfn_pyplates import __version__, core, functions
+from cfn_pyplates import core, functions
 from cfn_pyplates.exceptions import Error
 from cfn_pyplates.options import OptionsMapping
 
@@ -94,7 +94,9 @@ WARNING!
 
   Be careful.
 """
-    args = docopt(generate.__doc__, version=__version__)
+    from pkg_resources import require
+    version = require("cfn-pyplates")[0].version
+    args = docopt(generate.__doc__, version=version)
     scheme = Schema({
         '<pyplate>': Use(open),
         '<outfile>': Or(None, '-', Use(_open_writable)),
