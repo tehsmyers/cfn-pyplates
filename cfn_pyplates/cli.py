@@ -65,9 +65,9 @@ def generate():
     """Generate CloudFormation JSON Template based on a Pyplate
 
 Usage:
-  cfpy_generate <pyplate> [<outfile>] [-o/--options=<options_mapping>]
-  cfpy_generate (-h|--help)
-  cfpy_generate --version
+  cfn_py_generate <pyplate> [<outfile>] [-o/--options=<options_mapping>]
+  cfn_py_generate (-h|--help)
+  cfn_py_generate --version
 
 Arguments:
   pyplate
