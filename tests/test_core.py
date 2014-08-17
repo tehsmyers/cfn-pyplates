@@ -246,6 +246,33 @@ class ResourcesTestCase(unittest.TestCase):
         self.assertEqual(unicode(cft.resources.test), expected_out)
 
 
+class ConditionsTestCase(unittest.TestCase):
+    def test_condition(self):
+        cft = core.CloudFormationTemplate()
+        cft.conditions.test = core.Condition('TestCondition', {'Fn::Fake': 'ConditionValue'})
+
+        # Should have a new 'TestCondition' key in our template resources
+        self.assertIn('TestCondition', cft.conditions)
+
+        # And it should look like this...
+        expected_out = dedent(u'''\
+        {
+          "Fn::Fake": "ConditionValue"
+        }''')
+        self.assertEqual(unicode(cft.conditions.test), expected_out)
+
+    def test_condition_ref(self):
+        cft = core.CloudFormationTemplate()
+        cft.conditions.test = core.Condition('TestCondition', {'Ref': 'ReferencedThing'})
+
+        # And it should look like this...
+        expected_out = dedent(u'''\
+        {
+          "Ref": "ReferencedThing"
+        }''')
+        self.assertEqual(unicode(cft.conditions.test), expected_out)
+
+
 class MiscElementsTestCase(unittest.TestCase):
     def test_mapping_element(self):
         mappings = core.Mappings()

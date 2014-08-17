@@ -10,7 +10,7 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 
-"""Python wrappers for CloudFormation intrinsic functions [#cfn-functions]_
+"""Python wrappers for CloudFormation intrinsic functions
 
 These are all available without preamble in a pyplate's global namespace.
 
@@ -33,11 +33,18 @@ Notes:
   pythonic string join method may literally interpret a call to an intrinsic
   function, causing the resulting JSON to be interpreted as a string and
   ignored by the CloudFormation template parser
+* Functions related to conditions tend to overlap with python keywords, so they
+  are prefixed with ``c_`` to differentiate them (so, Fn::And become ``c_and``)
 
 .. note:
-    Documentation for the functions is verbatim from the AWS Docs
-    [#cfn-intrinsic-functions], except where identifiers are changed
-    to fit with normal python style.
+    Documentation for the functions is verbatim from the AWS Docs,
+    except where identifiers are changed to fit with normal python style.
+
+    Links:
+    * `Intrinsic Functions <cfn-functions_>`_
+    * `Intrinsic Condition Functions <cfn-functions-conditions_>`_
+
+
 """
 
 # Where needed, exception error messages are stored on the intrinsic function
@@ -54,6 +61,11 @@ __all__ = [
     'join',
     'select',
     'ref',
+    'c_and',
+    'c_or',
+    'c_not',
+    'c_if',
+    'c_equals',
 ]
 
 
@@ -241,3 +253,36 @@ def ref(logical_name):
 
     """
     return {'Ref': logical_name}
+
+
+def _validate_logical_condition_counts(fn, conditions):
+    if len(conditions) < 2:
+        raise IntrinsicFuncInputError(fn._errmsg_min)
+    elif len(conditions) > 10:
+        raise IntrinsicFuncInputError(fn._errmsg_max)
+
+
+def c_and(*conditions):
+    _validate_logical_condition_counts(c_and, conditions)
+    return {'Fn::And': list(conditions)}
+c_and._errmsg_min = "Minimum umber of conditions for 'c_and' condition is 2"
+c_and._errmsg_max = "Maximum umber of conditions for 'c_and' condition is 10"
+
+
+def c_or(*conditions):
+    _validate_logical_condition_counts(c_or, conditions)
+    return {'Fn::Or': list(conditions)}
+c_or._errmsg_min = "Minimum umber of conditions for 'c_or' condition is 2"
+c_or._errmsg_max = "Maximum umber of conditions for 'c_or' condition is 10"
+
+
+def c_not(condition):
+    return {'Fn::Not': [condition]}
+
+
+def c_equals(value_1, value_2):
+    return {'Fn::Equals': [value_1, value_2]}
+
+
+def c_if(condition_name, value_if_true, value_if_false):
+    return {'Fn::If': [condition_name, value_if_true, value_if_false]}
