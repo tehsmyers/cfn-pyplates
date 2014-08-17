@@ -181,7 +181,7 @@ class CloudFormationTemplate(JSONableDict):
     - Outputs
 
     """
-    def __init__(self, description=None):
+    def __init__(self, description=None, options=None):
         super(CloudFormationTemplate, self).__init__({
             'AWSTemplateFormatVersion': aws_template_format_version,
         })
@@ -191,6 +191,7 @@ class CloudFormationTemplate(JSONableDict):
             })
         # Tack on all the base template elements that a CF template can handle
         # at easy-to-reach parameters
+        self.options = options
         self.parameters = Parameters()
         self.mappings = Mappings()
         self.resources = Resources()
