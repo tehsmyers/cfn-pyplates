@@ -1,2 +1,7 @@
-# Uncomment to delegate requirements to local setup.py
-# -e .
+distribute
+docopt
+ordereddict
+pbr
+pyyaml
+schema
+semantic-version

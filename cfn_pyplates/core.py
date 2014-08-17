@@ -30,6 +30,7 @@ __all__ = [
     'Mappings',
     'Resources',
     'Outputs',
+    'Conditions',
     'Properties',
     'Mapping',
     'Resource',
@@ -39,6 +40,7 @@ __all__ = [
     'DeletionPolicy',
     'UpdatePolicy',
     'Metadata',
+    'Condition',
     'ec2_tags',
 ]
 
@@ -170,7 +172,7 @@ class JSONableDict(OrderedDict):
 
 
 class CloudFormationTemplate(JSONableDict):
-    """The root element of a CloudFormation template [#cfn-template]_
+    """The root element of a CloudFormation template
 
     Takes an option description string in the constructor
     Comes pre-loaded with all the subelements CloudFormation can stand:
@@ -179,6 +181,10 @@ class CloudFormationTemplate(JSONableDict):
     - Mappings
     - Resources
     - Outputs
+    - Conditions
+
+    For more information, see `the AWS docs <cfn-template_>`_
+
 
     """
     def __init__(self, description=None, options=None):
@@ -196,6 +202,7 @@ class CloudFormationTemplate(JSONableDict):
         self.mappings = Mappings()
         self.resources = Resources()
         self.outputs = Outputs()
+        self.conditions = Conditions()
 
     def __unicode__(self):
         # Before outputting to json, remove empty elements
@@ -215,25 +222,20 @@ class CloudFormationTemplate(JSONableDict):
         return super(CloudFormationTemplate, self).__unicode__()
 
 
-class Metadatums(JSONableDict):
-    """The base Container for metadatums used at stack creation [#cfn-metadata]_
-
-    Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
-    """
-    pass
-
-
 # CloudFormationTemplate base elements
 class Parameters(JSONableDict):
-    """The base Container for parameters used at stack creation [#cfn-parameters]_
+    """The base Container for parameters used at stack creation
 
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
+
+    For more information, see `the AWS docs <cfn-parameters_>`_
+
     """
     pass
 
 
 class Mappings(JSONableDict):
-    """The base Container for stack option mappings [#cfn-mappings]_
+    """The base Container for stack option mappings
 
     .. note::
 
@@ -241,29 +243,49 @@ class Mappings(JSONableDict):
         this is normally unused.
 
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
+
+    For more information, see `the AWS docs <cfn-mappings_>`_
+
     """
     pass
 
 
 class Resources(JSONableDict):
-    """The base Container for stack resources [#cfn-resources]_
+    """The base Container for stack resources
 
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
+
+    For more information, see `the AWS docs <cfn-resources_>`_
+
     """
     pass
 
 
 class Outputs(JSONableDict):
-    """The base Container for stack outputs [#cfn-outputs]_
+    """The base Container for stack outputs
 
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
+
+    For more information, see `the AWS docs <cfn-outputs_>`_
+
+    """
+    pass
+
+
+class Conditions(JSONableDict):
+    """The base Container for stack conditions used at stack creation
+
+    Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
+
+    For more information, see `the AWS docs <cfn-conditions_>`_
+
     """
     pass
 
 
 # Other 'named' JSONableDicts
 class Properties(JSONableDict):
-    """A properties mapping [#cfn-properties]_, used by various CFN declarations
+    """A properties mapping, used by various CFN declarations
 
     Can be found in:
 
@@ -272,22 +294,23 @@ class Properties(JSONableDict):
     - :class:`cfn_pyplates.core.Resource`
 
     Properties will be most commonly found in Resources
+
+    For more information, see `the AWS docs <cfn-properties_>`_
+
     """
     pass
 
 
 class Resource(JSONableDict):
-    """A generic CFN Resource [#cfn-resource-types]_
+    """A generic CFN Resource
 
     Used in the :class:`cfn_pyplates.core.Resources` container.
 
     All resources have a name, and most have a 'Type' and 'Properties' dict.
     Thus, this class takes those as arguments and makes a generic resource.
 
-    The 'name' parameter must follow CFN's guidelines for naming [#cfn-resources]_
-    The 'type' parameter must be one of these:
-
-    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
+    The 'name' parameter must follow CFN's guidelines for naming
+    The 'type' parameter must be `one of these <cfn-resource-types_>`_
 
     The optional 'properties' parameter is a dictionary of properties as
     defined by the resource type, see documentation related to each resource
@@ -298,8 +321,10 @@ class Resource(JSONableDict):
         type: The type of this resource
         properties: Optional properties mapping to apply to this resource,
             can be an instance of ``JSONableDict`` or just plain old ``dict``
-        attributes: Optional (on of 'DependsOn', 'DeletionPolicy',
+        attributes: Optional (one of 'Condition', 'DependsOn', 'DeletionPolicy',
             'Metadata', 'UpdatePolicy' or a list of 2 or more)
+
+    For more information, see `the AWS docs <cfn-resources_>`_
 
     """
 
@@ -330,20 +355,18 @@ class Resource(JSONableDict):
                 self._is_attribute(i)
         elif attribute.__class__.__name__ in ['Metadata', 'UpdatePolicy']:
             self.add(attribute)
-        elif attribute.__class__.__name__ in ['DependsOn', 'DeletionPolicy']:
+        elif attribute.__class__.__name__ in ['DependsOn', 'DeletionPolicy', 'Condition']:
             self.update({attribute.__class__.__name__: attribute.value})
 
 
 class Parameter(JSONableDict):
-    """A CFN Parameter [#cfn-parameters]_
+    """A CFN Parameter
 
     Used in the :class:`cfn_pyplates.core.Parameters` container, a Parameter
     will be used when the template is processed by CloudFormation to prompt the
     user for any additional input.
 
-    More information for Parameter options:
-
-    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
+    For more information, see `the AWS docs <cfn-parameters_>`_
 
     Args:
         name: The unique name of the parameter to add
@@ -362,15 +385,13 @@ class Parameter(JSONableDict):
 
 
 class Mapping(JSONableDict):
-    """A CFN Mapping [#cfn-mappings]_
+    """A CFN Mapping
 
     Used in the :class:`cfn_pyplates.core.Mappings` container, a Mapping
     defines mappings used within the Cloudformation template and is not
     the same as a PyPlates options mapping.
 
-    More information for mapping options:
-
-    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/concept-mappings.html
+    For more information, see `the AWS docs <cfn-mappings_>`_
 
     Args:
         name: The unique name of the mapping to add
@@ -386,14 +407,12 @@ class Mapping(JSONableDict):
 
 
 class Output(JSONableDict):
-    """A CFN Output [#cfn-outputs]_
+    """A CFN Output
 
     Used in the :class:`cfn_pyplates.core.Outputs`, an Output entry describes
     a value to be shown when describe this stack using CFN API tools.
 
-    More information for Output options can be found here:
-
-    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
+    For more information, see `the AWS docs <cfn-outputs_>`_
 
     Args:
         name: The unique name of the output
@@ -410,7 +429,7 @@ class Output(JSONableDict):
 
 
 class Metadata(JSONableDict):
-    """A CFN Output [#cfn-outputs]_
+    """CFN Resource Metadata
 
     Used in the :class:`cfn_pyplates.core.Resource`,The Metadata attribute enables you to associate
     structured data with a resource. By adding a Metadata attribute to a resource, you can add data
@@ -418,28 +437,24 @@ class Metadata(JSONableDict):
     as GetAtt and Ref), parameters, and pseudo parameters within the Metadata attribute to add those
     interpreted values.
 
-    More information for Metadata can be found here:
-
-    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-metadata.html
+    For more information, see `the AWS docs <cfn-metadata_>`_
 
     Args:
         properties: The unique name of the output
 
     """
 
-    def __init__(self, properties=None):
-        super(Metadata, self).__init__(properties, 'Metadata')
+    def __init__(self, metadata):
+        super(Metadata, self).__init__(metadata, 'Metadata')
 
 
 class DependsOn(object):
-    """A CFN Output [#cfn-outputs]_
+    """A CFN Resource Dependency
 
     Used in the :class:`cfn_pyplates.core.Resource`, The DependsOn attribute enables you to specify
     that the creation of a specific resource follows another
 
-    More information for DependsOn Attribute can be found here:
-
-    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html
+    For more information, see `the AWS docs <cfn-dependson_>`_
 
     Args:
         properties: The unique name of the output
@@ -452,14 +467,12 @@ class DependsOn(object):
 
 
 class DeletionPolicy(object):
-    """A CFN Output [#cfn-outputs]_
+    """A CFN Resource Deletion Policy
 
     Used in the :class:`cfn_pyplates.core.Resource`, The DeletionPolicy attribute enables you to
     specify how AWS CloudFormation handles the resource deletion.
 
-    More information for DeletionPolicy Attribute can be found here:
-
-    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+    For more information, see `the AWS docs <cfn-deletionpolicy_>`_
 
     Args:
         properties: The unique name of the output
@@ -472,14 +485,12 @@ class DeletionPolicy(object):
 
 
 class UpdatePolicy(JSONableDict):
-    """A CFN Output [#cfn-outputs]_
+    """A CFN Resource Update Policy
 
     Used in the :class:`cfn_pyplates.core.Resource`, The UpdatePolicy attribute enables you to
     specify how AWS CloudFormation handles rolling updates for a particular resource.
 
-    More information for UpdatePolicy Attribute can be found here:
-
-    http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html
+    For more information, see `the AWS docs <cfn-updatepolicy_>`_
 
     Args:
         properties: The unique name of the output
@@ -490,6 +501,30 @@ class UpdatePolicy(JSONableDict):
         super(UpdatePolicy, self).__init__(properties, 'UpdatePolicy')
 
 
+class Condition(JSONableDict):
+    """A CFN Condition Item
+
+    Used in the :class:`cfn_pyplates.core.Condition` container, a ConditionItem
+    will be used when the template is processed by CloudFormation so you can define
+    which resources are created and how they're configured for each environment type.
+
+    Conditions are made up of instrinsic functions for conditions found in
+    :mod:`cfn_pyplates.functions`, or a :func:`ref <cfn_pyplates.functions.ref>`
+    to a :class:`Parameter` or :class:`Mapping`.
+
+    For more information, see `the AWS docs <cfn-conditions_>`_
+
+    Args:
+        name: The unique name of the ConditionItem to add
+        type: The type of this parameter
+        properties: The Intrinsic Conditional function
+
+    """
+
+    def __init__(self, name, condition):
+        super(Condition, self).__init__(condition, name)
+
+
 def ec2_tags(tags):
     """A container for Tags on EC2 Instances
 
@@ -497,22 +532,22 @@ def ec2_tags(tags):
     opportunites in the land of python to keep things a little more
     sane.
 
-    So we can turn the
-    `AWS EC2 Tags example <http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/\
-        aws-properties-ec2-tags.html>`_
-    from this::
+    So we can turn the AWS EC2 Tags example from this::
 
         "Tags": [
             { "Key" : "Role", "Value": "Test Instance" },
             { "Key" : "Application", "Value" : { "Ref" : "AWS::StackName"} }
         ]
 
-    Into something more like this::
+    Into this::
 
-        EC2Tags({
+        ec2_tags({
             'Role': 'Test Instance',
             'Application': ref('StackName'),
         })
+
+    For more information, see `the AWS docs <cfn-ec2tags_>`_
+
 
     Args:
         tags: A dictionary of tags to apply to an EC2 instance

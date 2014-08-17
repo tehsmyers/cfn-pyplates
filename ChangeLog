@@ -1,0 +1,62 @@
+CHANGES
+=======
+
+0.4.0
+-----
+
+* Conditionals support
+* lint
+
+0.3.1
+-----
+
+* pyplates are easier to subclass
+* Added Basic support for Conditions
+* Fixed docstring on cors-having bucket
+* Added advanced usage tutorial
+* Made setup.py executable
+* Added options argument to CloudFormationTemplate __init__ method
+* s/Doumentation/Documentation
+* Version bump: 0.3.0
+* Minor lint fix
+* Using semantic_version instead of verlib
+* No more sphinx warnings!
+* Developer docs, minor tweaks
+* Super-prviate method now merely private
+* Normalize quotes
+* Updated documentation examples for attributes and Metadata
+* Version bump to 0.3.0a1, we'll see what travis has to say about this..
+* Mapping type!
+* Brought in the mapping class from ee6e5fd4a
+* Version bump: 0.2.1
+* Remove license kwarg from setup.py
+* Version bump: 0.2.0
+* JSONableDict.add returns the added child
+* setup.py reads licence from LICENCE file
+* Brought in changes from PR#12
+* Added support for Resource Properties
+* Version bump to v.0.1.2!
+* Added documentation for the metadata feature
+* Providing support for metadata
+* Version bump! Welcome to v0.1.1!
+* Added license text to python modules
+* fixes #6: Added input validation to join and select
+* Knocked out a doc TODO related to intrinsic joins
+* Broke out the options example template
+* Fixed copyright in docs
+* Fixed an error in the production example mapping
+* Fixed a missing command in pypi classifiers
+* Improved test coverage
+* Trying out some travis!
+* Final big docs push
+* Added a --version flag to cfn_py_generate
+* PEP'd some 8s! (whitepsace corrections...)
+* Put a note about the include not working :(
+* Added a readthedocs link to the readme
+* The docs! Still need examples..
+* Added/changed many things. Megacommit!
+* Removed 'version' silliness, added CLI TestCase
+* Changed BaseMapping to a less generic name
+* Added some version handling and a LICENSE
+* Added the library, now to write the docs :\
+* Initial commit
