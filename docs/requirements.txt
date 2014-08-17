@@ -5,3 +5,6 @@ Sphinx
 
 # this lets you write docstrings according to the google python style guide
 cartouche
+
+# docs need pbr to help with versions
+pbr

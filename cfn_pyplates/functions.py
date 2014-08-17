@@ -248,14 +248,30 @@ def ref(logical_name):
         * When you specify a resource's logical name, it returns a value
             that you can typically use to refer to that resource.
 
-
     .. note:: You can also use Ref to add values to Output messages.
 
     """
     return {'Ref': logical_name}
 
 
+def c_ref(condition_name):
+    """The intrinsic function Condition used to reference a named condition
+
+    When you refer to a condition in another condition or associate the
+    condition with a resource, you use the Condition: key. For the Fn::If
+    function, you only need to specify the condition name.
+
+    Args:
+        condition_name: The name of the condition you want to reference.
+
+    Returns:
+        * A reference to the named condition
+
+    """
+
+
 def _validate_logical_condition_counts(fn, conditions):
+    # c_and / c_or have these limits applied, this keeps it DRY
     if len(conditions) < 2:
         raise IntrinsicFuncInputError(fn._errmsg_min)
     elif len(conditions) > 10:
@@ -263,6 +279,19 @@ def _validate_logical_condition_counts(fn, conditions):
 
 
 def c_and(*conditions):
+    """The intrinsic conditional function Fn::And
+
+    Returns true (for the pruposes of the cfn template) if all the specified conditions
+    evaluate to true, or returns false if any one of the conditions evaluates to false.
+
+    Fn::And acts as an AND operator.
+
+    The minimum number of conditions that you can include is 2, and the maximum is 10.
+
+    Args:
+        *conditions: The conditions to evaluate
+
+    """
     _validate_logical_condition_counts(c_and, conditions)
     return {'Fn::And': list(conditions)}
 c_and._errmsg_min = "Minimum umber of conditions for 'c_and' condition is 2"
@@ -270,6 +299,19 @@ c_and._errmsg_max = "Maximum umber of conditions for 'c_and' condition is 10"
 
 
 def c_or(*conditions):
+    """The intrinsic conditional function Fn::Or
+
+    Returns true (for the pruposes of the cfn template) if any one of the specified conditions
+    evaluate to true, or returns false if all of the conditions evaluates to false.
+
+    Fn::Or acts as an OR operator.
+
+    The minimum number of conditions that you can include is 2, and the maximum is 10.
+
+    Args:
+        *conditions: The conditions to evaluate
+
+    """
     _validate_logical_condition_counts(c_or, conditions)
     return {'Fn::Or': list(conditions)}
 c_or._errmsg_min = "Minimum umber of conditions for 'c_or' condition is 2"
@@ -277,12 +319,40 @@ c_or._errmsg_max = "Maximum umber of conditions for 'c_or' condition is 10"
 
 
 def c_not(condition):
+    """The intrinsic conditional function Fn::Not
+
+    Returns true for a condition that evaluates to false or
+    returns false for a condition that evaluates to true.
+
+    Fn::Not acts as a NOT operator.
+
+    """
     return {'Fn::Not': [condition]}
 
 
 def c_equals(value_1, value_2):
+    """The intrinsic conditional function Fn::Equals
+
+    Compares if two values are equal.
+
+    Returns true if the two values are equal or false if they aren't.
+
+    """
     return {'Fn::Equals': [value_1, value_2]}
 
 
 def c_if(condition_name, value_if_true, value_if_false):
+    """The intrinsic conditional function Fn::If representsa a ternary conditional operator
+
+    Returns one value if the specified condition evaluates to true and another value
+    if the specified condition evaluates to false.
+
+    Currently, AWS CloudFormation supports the Fn::If intrinsic function in the
+    metadata attribute, update policy attribute, and property values in the Resources
+    section and Outputs sections of a template.
+
+    You can use the AWS::NoValue pseudo parameter as a return value
+    to remove the corresponding property.
+
+    """
     return {'Fn::If': [condition_name, value_if_true, value_if_false]}
