@@ -61,6 +61,7 @@ __all__ = [
     'join',
     'select',
     'ref',
+    'c_ref',
     'c_and',
     'c_or',
     'c_not',
