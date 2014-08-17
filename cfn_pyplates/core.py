@@ -264,9 +264,10 @@ class Outputs(JSONableDict):
     """
     pass
 
+
 class Conditions(JSONableDict):
     """The base Container for stack conditions used at stack creation [#cfn-conditions]_
-        
+
     Attached to a :class:`cfn_pyplates.core.CloudFormationTemplate`
     """
     pass
@@ -503,19 +504,19 @@ class UpdatePolicy(JSONableDict):
 
 class Condition(object):
     """A CFN Output [#cfn-outputs]_
-    
+
     Used in the :class:`cfn_pyplates.core.Conditions`, The Condition attribute enables you to
     conditionally create resources based on the result of a ConditionItem.
-    
+
     More information for Condition Attribute can be found here:
-    
+
     http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html
-    
+
     Args:
     properties: The unique name of ConditionItem
-    
+
     """
-    
+
     def __init__(self, policy=None):
         if policy:
             self.value = policy
@@ -523,20 +524,20 @@ class Condition(object):
 
 class ConditionItem(JSONableDict):
     """A CFN Parameter [#cfn-outputs]_
- 
+
     Used in the :class:`cfn_pyplates.core.Condition` container, a ConditionItem
-    will be used when the template is processed by CloudFormation so you can define which resources are
-    created and how they're configured for each environment type.
-    
+    will be used when the template is processed by CloudFormation so you can define which resources
+    are created and how they're configured for each environment type.
+
     More information for ConditionItem options:
-    
+
     http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-conditions.html
-    
+
     Args:
     name: The unique name of the ConditionItem to add
     type: The type of this parameter
     properties: The Intrinsic Conditional function
-    
+
     """
 
     def __init__(self, name, type, conditions=None):
