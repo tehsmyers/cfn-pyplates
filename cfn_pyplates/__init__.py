@@ -19,7 +19,7 @@ See also:
 - https://github.com/seandst/cfn-pyplates/
 '''
 
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 
 import warnings
 
