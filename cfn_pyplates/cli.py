@@ -78,6 +78,8 @@ def callable_generate(pyplate, outfile=None, options=None):
         if not isinstance(options, file):
             options = open(options)
         options = yaml.load(options)
+    else:
+        options = {}
 
     options_mapping = OptionsMapping(options)
 
