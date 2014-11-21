@@ -93,16 +93,14 @@ def callable_generate(pyplate, outfile=None, options=None):
     except Error as e:
         print 'Error processing the pyplate:'
         print e.message
-        return 1
+        return
 
     if outfile:
         if not isinstance(outfile, file):
             outfile = _openwritable(outfile)
         outfile.write(output)
-    else:
-        print output
 
-    return 0
+    return output
 
 
 def generate():
@@ -150,4 +148,11 @@ WARNING!
     })
     args = scheme.validate(args)
 
-    return callable_generate(args['<pyplate>'], args['<outfile>'], args['--options'])
+    out = callable_generate(args['<pyplate>'], args['<outfile>'], args['--options'])
+
+    if not out:
+        return 1
+    elif not args['<outfile>']:
+        print out
+
+    return 0
