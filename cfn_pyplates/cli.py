@@ -61,6 +61,48 @@ def _open_writable(outfile_name):
     return open(outfile_name, 'w')
 
 
+def callable_generate(pyplate, outfile=None, options=None):
+    """Generate CloudFormation JSON Template based on a Pyplate
+
+    Arguments:
+    pyplate
+      input pyplate file, can be a path or a file object
+
+    outfile
+      output file, can be a path or a writable file object
+
+    options
+      input JSON or yaml, can be a path or a writeable file object
+"""
+    if options:
+        if not isinstance(options, file):
+            options = open(options)
+        options = yaml.load(options)
+
+    options_mapping = OptionsMapping(options)
+
+    if not isinstance(pyplate, file):
+        pyplate = open(pyplate)
+    pyplate = _load_pyplate(pyplate, options_mapping)
+
+    try:
+        cft = _find_cloudformationtemplate(pyplate)
+        output = unicode(cft)
+    except Error as e:
+        print 'Error processing the pyplate:'
+        print e.message
+        return 1
+
+    if outfile:
+        if not isinstance(outfile, file):
+            outfile = _openwritable(outfile)
+        outfile.write(output)
+    else:
+        print output
+
+    return 0
+
+
 def generate():
     """Generate CloudFormation JSON Template based on a Pyplate
 
@@ -106,34 +148,4 @@ WARNING!
     })
     args = scheme.validate(args)
 
-    options_file = args['--options']
-    if options_file:
-        options = yaml.load(options_file)
-    else:
-        options = {}
-
-    options_mapping = OptionsMapping(options)
-
-    # Not sure if Scheme can validate one options based on the value of
-    # another, but some pyplates need options_mapping to load and some
-    # don't. We could validate the second case easily enough, but in the
-    # first case we'd have to pass the options mapping in to the test
-    # function. Not sure that's possible.
-    pyplate = _load_pyplate(args['<pyplate>'], options_mapping)
-
-    try:
-        cft = _find_cloudformationtemplate(pyplate)
-        output = unicode(cft)
-    except Error as e:
-        print 'Error processing the pyplate:'
-        print e.message
-        return 1
-
-    outfile = args['<outfile>']
-    if isinstance(outfile, file):
-        outfile.write(output)
-    else:
-        print(output)
-
-    # Explicitly return a posixy "EVERYTHING IS OKAY" 0
-    return 0
+    return callable_generate(args['<pyplate>'], args['<outfile>'], args['--options'])
