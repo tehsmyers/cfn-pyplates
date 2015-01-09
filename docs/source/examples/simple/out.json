@@ -6,7 +6,7 @@
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "InstanceType": "m1.small",
-        "ImageID": "ami-c30360aa"
+        "ImageId": "ami-c30360aa"
       }
     }
   }
