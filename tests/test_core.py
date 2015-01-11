@@ -257,7 +257,6 @@ class ResourcesTestCase(unittest.TestCase):
           "Type": "AWS::Resource::Test",
           "Condition": "TestCondition"
         }''')
-        print unicode(cft)
         self.assertEqual(unicode(cft.resources.test), expected_out)
 
 
