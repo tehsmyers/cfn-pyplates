@@ -523,6 +523,7 @@ class Condition(JSONableDict):
 
     def __init__(self, name, condition):
         super(Condition, self).__init__(condition, name)
+        self.value = name
 
 
 def ec2_tags(tags):

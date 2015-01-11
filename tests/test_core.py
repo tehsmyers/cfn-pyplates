@@ -245,6 +245,21 @@ class ResourcesTestCase(unittest.TestCase):
         }''')
         self.assertEqual(unicode(cft.resources.test), expected_out)
 
+    def test_resource_with_condition(self):
+        condition = core.Condition('TestCondition', {'Fn::Fake': 'ConditionValue'})
+        res = core.Resource('TestResource', 'AWS::Resource::Test', None, condition)
+        cft = core.CloudFormationTemplate()
+        cft.resources.test = res
+
+        # The output should have the metadata attached
+        expected_out = dedent(u'''\
+        {
+          "Type": "AWS::Resource::Test",
+          "Condition": "TestCondition"
+        }''')
+        print unicode(cft)
+        self.assertEqual(unicode(cft.resources.test), expected_out)
+
 
 class ConditionsTestCase(unittest.TestCase):
     def test_condition(self):

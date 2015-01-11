@@ -18,6 +18,8 @@ usage information as seen on the command-line.
 """
 from docopt import docopt
 from schema import Schema, Use, Or
+import os
+import sys
 import yaml
 
 from cfn_pyplates import core, functions
@@ -114,6 +116,8 @@ WARNING!
 
     options_mapping = OptionsMapping(options)
 
+    sys.path.insert(0, os.path.dirname(args['<pyplate>'].name))
+    # Add the pyplate dir to the python path
     # Not sure if Scheme can validate one options based on the value of
     # another, but some pyplates need options_mapping to load and some
     # don't. We could validate the second case easily enough, but in the
