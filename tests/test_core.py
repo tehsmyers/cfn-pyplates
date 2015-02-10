@@ -9,7 +9,9 @@
 #
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-
+import json
+import unittest
+from tempfile import NamedTemporaryFile
 from textwrap import dedent
 
 import unittest2 as unittest
@@ -371,3 +373,20 @@ class MiscElementsTestCase(unittest.TestCase):
                 self.assertEqual(entry['Value'], 'TestValue1')
             if entry['Key'] == 'TestKey2':
                 self.assertEqual(entry['Value'], 'TestValue2')
+
+
+class GenerateTestCase(unittest.TestCase):
+    def test_callable_generate(self):
+        # Make a pyplate that uses the options mapping
+        pyplate_contents = dedent(u'''\
+        cft = CloudFormationTemplate('This is a test')
+        cft.parameters.update({
+            'Exists': options['ThisKeyExists']
+        })''')
+        pyplate = NamedTemporaryFile()
+        pyplate.write(pyplate_contents)
+        pyplate.flush()
+
+        # call generate directly with an options mapping, no CLI
+        output = json.loads(core.generate_pyplate(pyplate.name, {'ThisKeyExists': True}))
+        self.assertTrue(output['Parameters']['Exists'])
