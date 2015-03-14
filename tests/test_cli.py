@@ -15,8 +15,7 @@ from textwrap import dedent
 from tempfile import NamedTemporaryFile
 import json
 import sys
-
-import unittest2 as unittest
+import unittest
 
 from cfn_pyplates import cli
 

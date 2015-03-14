@@ -11,10 +11,8 @@
 # all copies or substantial portions of the Software.
 import json
 import unittest
-from tempfile import NamedTemporaryFile
 from textwrap import dedent
-
-import unittest2 as unittest
+from tempfile import NamedTemporaryFile
 
 from cfn_pyplates import core
 
