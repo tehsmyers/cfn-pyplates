@@ -15,8 +15,7 @@ from textwrap import dedent
 from tempfile import NamedTemporaryFile
 import json
 import sys
-
-import unittest2 as unittest
+import unittest
 
 from cfn_pyplates import cli
 
@@ -30,7 +29,7 @@ except ImportError:
 
 @unittest.skipIf(patch is None, mock_error)
 class CLITestCase(unittest.TestCase):
-    def setUp(self):
+    def setUp(self):  # NOQA
         # Patch out argv, stdin, and stdout so that we can do some
         # useful things, like:
         # - Fake arguments to be used by a CLI function
@@ -46,17 +45,32 @@ class CLITestCase(unittest.TestCase):
         stdout_patcher.start()
         self.addCleanup(stdout_patcher.stop)
 
+    def _make_pyplate(self, contents):
+        contents = dedent(contents)
+        pyplate = NamedTemporaryFile()
+        pyplate.write(contents)
+        pyplate.flush()
+        return pyplate
+
+    def _generate(self, fail_on_error=True):
+        return_code = cli.generate()
+        sys.stdout.seek(0)
+        out = '\n'.join([line for line in sys.stdout.readlines()])
+        if return_code != 0:
+            if fail_on_error:
+                self.fail('generate failed, stdout dump follows:\n{0}'.format(
+                    out)
+                )
+        return out
+
     def test_generate(self):
         # Make a pyplate that uses the options mapping
-        pyplate_contents = dedent(u'''\
+        pyplate = self._make_pyplate(u'''\
         cft = CloudFormationTemplate('This is a test')
         cft.parameters.update({
             'Exists': options['ThisKeyExists'],
             'DoesNotExist': options['ThisKeyDoesNotExist']
         })''')
-        pyplate = NamedTemporaryFile()
-        pyplate.write(pyplate_contents)
-        pyplate.flush()
 
         # Now make an options mapping with only one of those keys in it
         # to simultaneously test options interpolation and
@@ -84,35 +98,41 @@ class CLITestCase(unittest.TestCase):
         sys.stdin.seek(0)
 
         # Run the command, catch it if it tries to exit the interpreter
-        return_code = cli.generate()
-        if return_code != 0:
-            sys.stdout.seek(0)
-            message = sys.stdout.read()
-            self.fail('generate failed, stdout dump follows:\n{0}'.format(
-                message)
-            )
+        self._generate()
 
-        # Load the output back into python for assertions
-        output = json.load(outfile)
+        # Load the template back into python for assertions
+        template = json.load(outfile)
 
         # The Exists parameter should evaluate to bool True...
         # If so, then options_mapping interpolation works
-        self.assertTrue(output['Parameters']['Exists'])
+        self.assertTrue(template['Parameters']['Exists'])
 
         # The DoesNotExist parameter should be what was injected to stdin
         # If so, then prompts to populate missing options_mapping entries work
-        self.assertEqual(output['Parameters']['DoesNotExist'], input)
+        self.assertEqual(template['Parameters']['DoesNotExist'], input)
+
+    def test_generate_no_options_no_outfile(self):
+        # generate with no options mapping to stdout
+        description = 'This is a test.'
+        pyplate = self._make_pyplate("cft = CloudFormationTemplate('{}')".format(description))
+
+        # Populate sys.argv with something reasonable based on all the
+        # tempfiles. On the command line this would look like
+        # "cfn_py_generate pyplate outfile -o options_mapping"
+        sys.argv = ['cfn_py_generate', pyplate.name, '-']
+
+        template = json.loads(self._generate())
+
+        # The description in the template should match the one in the pyplate
+        self.assertEqual(template['Description'], description)
 
     def test_generate_stdin_options(self):
         # Make a pyplate that uses the options mapping
-        pyplate_contents = dedent(u'''\
+        pyplate = self._make_pyplate(u'''\
         cft = CloudFormationTemplate('This is a test')
         cft.parameters.update({
             'Exists': options['ThisKeyExists'],
         })''')
-        pyplate = NamedTemporaryFile()
-        pyplate.write(pyplate_contents)
-        pyplate.flush()
 
         # Prime stdin with the contents of the options file
         sys.stdin.write('{0}\n'.format(dedent(u'''\
@@ -122,27 +142,22 @@ class CLITestCase(unittest.TestCase):
         ''')))
         sys.stdin.seek(0)
 
-        # The outfile which will receive the rendered json
-        outfile = NamedTemporaryFile()
-
         # Populate sys.argv with something reasonable based on all the
         # tempfiles. On the command line this would look like
         # "cfn_py_generate pyplate outfile -o options_mapping"
-        sys.argv = ['cfn_py_generate', pyplate.name, outfile.name,
-            '-o', '-']
+        sys.argv = ['cfn_py_generate', pyplate.name, '-o', '-']
 
-        # Run the command, catch it if it tries to exit the interpreter
-        return_code = cli.generate()
-        if return_code != 0:
-            sys.stdout.seek(0)
-            message = sys.stdout.read()
-            self.fail('generate failed, stdout dump follows:\n{0}'.format(
-                message)
-            )
-
-        # Load the output back into python for assertions
-        output = json.load(outfile)
+        template = json.loads(self._generate())
 
         # The Exists parameter should evaluate to bool True...
         # If so, then options_mapping interpolation works
-        self.assertTrue(output['Parameters']['Exists'])
+        self.assertTrue(template['Parameters']['Exists'])
+
+    def test_broken_pyplate(self):
+        pyplate = self._make_pyplate(u'''\
+        I am a broken pyplate.
+        })''')
+        sys.argv = ['cfn_py_generate', pyplate.name]
+        out = self._generate(fail_on_error=False)
+        # This pyplate should fail because its python syntax isn't valid
+        self.assertIn('SyntaxError', out)

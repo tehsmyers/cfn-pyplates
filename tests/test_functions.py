@@ -10,7 +10,7 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 
-import unittest2 as unittest
+import unittest
 
 from cfn_pyplates import exceptions, functions
 
