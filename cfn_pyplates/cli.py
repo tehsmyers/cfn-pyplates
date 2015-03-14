@@ -26,9 +26,20 @@ from cfn_pyplates import core
 from cfn_pyplates.options import OptionsMapping
 
 
-def _open_writable(outfile_name):
-    'Helper function so we can offload the opening and validation to Schema'
-    return open(outfile_name, 'w')
+def _open_outfile(outfile_name):
+    'Helper function for Schema to open the outfile'
+    if outfile_name == '-':
+        return sys.stdout
+    else:
+        return open(outfile_name, 'w')
+
+
+def _open_optionfile(optionfile_name):
+    'Helper function for Schema to open the option file'
+    if optionfile_name == '-':
+        return sys.stdin
+    else:
+        return open(optionfile_name)
 
 
 def generate():
@@ -72,8 +83,8 @@ WARNING!
     args = docopt(generate.__doc__, version=version)
     scheme = Schema({
         '<pyplate>': Use(open),
-        '<outfile>': Or(None, '-', Use(_open_writable)),
-        '--options': Or(None, '-', Use(open)),
+        '<outfile>': Or(None, Use(_open_outfile)),
+        '--options': Or(None, Use(_open_optionfile)),
         '--help': Or(True, False),
         '--version': Or(True, False),
     })
@@ -81,11 +92,7 @@ WARNING!
 
     options_file = args['--options']
     if options_file:
-        if isinstance(options_file, file):
-            options = yaml.load(options_file)
-        else:
-            options = yaml.load(sys.stdin)
-
+        options = yaml.load(options_file)
     else:
         options = {}
 
@@ -94,7 +101,7 @@ WARNING!
     if not output:
         return 1
 
-    if not args['<outfile>']:
+    if not args['<outfile>'] or args['<outfile>'] == '-':
         print output
     else:
         args['<outfile>'].write(output)
