@@ -102,3 +102,47 @@ class CLITestCase(unittest.TestCase):
         # The DoesNotExist parameter should be what was injected to stdin
         # If so, then prompts to populate missing options_mapping entries work
         self.assertEqual(output['Parameters']['DoesNotExist'], input)
+
+    def test_generate_stdin_options(self):
+        # Make a pyplate that uses the options mapping
+        pyplate_contents = dedent(u'''\
+        cft = CloudFormationTemplate('This is a test')
+        cft.parameters.update({
+            'Exists': options['ThisKeyExists'],
+        })''')
+        pyplate = NamedTemporaryFile()
+        pyplate.write(pyplate_contents)
+        pyplate.flush()
+
+        # Prime stdin with the contents of the options file
+        sys.stdin.write('{0}\n'.format(dedent(u'''\
+        {
+            'ThisKeyExists': true
+        }
+        ''')))
+        sys.stdin.seek(0)
+
+        # The outfile which will receive the rendered json
+        outfile = NamedTemporaryFile()
+
+        # Populate sys.argv with something reasonable based on all the
+        # tempfiles. On the command line this would look like
+        # "cfn_py_generate pyplate outfile -o options_mapping"
+        sys.argv = ['cfn_py_generate', pyplate.name, outfile.name,
+            '-o', '-']
+
+        # Run the command, catch it if it tries to exit the interpreter
+        return_code = cli.generate()
+        if return_code != 0:
+            sys.stdout.seek(0)
+            message = sys.stdout.read()
+            self.fail('generate failed, stdout dump follows:\n{0}'.format(
+                message)
+            )
+
+        # Load the output back into python for assertions
+        output = json.load(outfile)
+
+        # The Exists parameter should evaluate to bool True...
+        # If so, then options_mapping interpolation works
+        self.assertTrue(output['Parameters']['Exists'])

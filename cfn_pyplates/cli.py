@@ -83,6 +83,7 @@ Options:
   -o --options=<options_mapping>
     Input JSON or YAML file for options mapping
     exposed in the pyplate as "options_mapping"
+    (if '-', accepts input from stdin)
 
   -h --help
     This usage information
@@ -102,7 +103,7 @@ WARNING!
     scheme = Schema({
         '<pyplate>': Use(open),
         '<outfile>': Or(None, '-', Use(_open_writable)),
-        '--options': Or(None, Use(open)),
+        '--options': Or(None, '-', Use(open)),
         '--help': Or(True, False),
         '--version': Or(True, False),
     })
@@ -110,7 +111,11 @@ WARNING!
 
     options_file = args['--options']
     if options_file:
-        options = yaml.load(options_file)
+        if isinstance(options_file, file):
+            options = yaml.load(options_file)
+        else:
+            options = yaml.load(sys.stdin)
+
     else:
         options = {}
 
