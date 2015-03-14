@@ -35,5 +35,5 @@ nosetests.xml
 .pydevproject
 
 # pbr autogen
-ChangeLog
 AUTHORS
+ChangeLog
