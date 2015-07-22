@@ -67,6 +67,7 @@ __all__ = [
     'c_not',
     'c_if',
     'c_equals',
+    'user_file'
 ]
 
 
@@ -358,3 +359,53 @@ def c_if(condition_name, value_if_true, value_if_false):
 
     """
     return {'Fn::If': [condition_name, value_if_true, value_if_false]}
+
+def user_file(thefile, args = None):
+    """This method attempts to allow easy inclusion of a file with optional reference value insertions
+
+    Returns one value containing the data to pass to a "content" element of a
+    "file" entry.  This method takes care of reading in the file, iterating
+    through the lines, substituting reference values if present, and then
+    returning either just a string (single-line file) or a dictionary using
+    the "join" method.
+
+    Reference values are substituted by placing 4 underscores (____) in the
+    passed file where a reference value should be substituted.  Those
+    placeholders are then replaced in order of appearance in the file with
+    references in the "args" parameter.
+
+    Reference value substitution taken from another CloudFormations library at:
+    https://github.com/devstructure/python-cloudformation/blob/master/cloudformation/__init__.py#L66-L89
+
+    """
+    lines = []
+    data = []
+
+    if args:
+        iterargs = iter(args)
+
+    fd = open(thefile, "r")
+    for line in fd:
+        data.append(line.rstrip().split("____"))
+    fd.close()
+
+    for parts in data:
+        if 1 == len(parts):
+            lines.append(parts[0])
+        else:
+            line = []
+
+            for part in parts:
+                line.extend([part, None])
+            line.pop()
+
+            for i in range(len(line)):
+                if line[i] is None:
+                    line[i] = iterargs.next()
+
+            lines.append(join("", *line))
+
+    if len(lines) > 1:
+        return join("\n", *lines)
+    else:
+        return lines[0]
