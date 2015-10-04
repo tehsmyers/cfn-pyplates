@@ -360,7 +360,8 @@ def c_if(condition_name, value_if_true, value_if_false):
     """
     return {'Fn::If': [condition_name, value_if_true, value_if_false]}
 
-def user_file(thefile, args = None):
+
+def user_file(thefile, args=None):
     """This method attempts to allow easy inclusion of a file with optional reference value insertions
 
     Returns one value containing the data to pass to a "content" element of a
