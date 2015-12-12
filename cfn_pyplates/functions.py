@@ -390,9 +390,6 @@ def user_file(thefile, args=None):
     lines = []
     data = []
 
-    if args:
-        iterargs = iter(args)
-
     fd = open(thefile, "r")
     for line in fd:
         data.append(line.rstrip().split("%%"))
