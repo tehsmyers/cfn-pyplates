@@ -362,7 +362,7 @@ def c_if(condition_name, value_if_true, value_if_false):
 
 
 def user_file(thefile, args=None):
-    """This method attempts to allow easy inclusion of a file with optional reference value insertions
+    """Allows easy inclusion of a file with optional reference value insertions
 
     Returns one value containing the data to pass to a "content" element of a
     "file" entry.  This method takes care of reading in the file, iterating
@@ -370,12 +370,20 @@ def user_file(thefile, args=None):
     returning either just a string (single-line file) or a dictionary using
     the "join" method.
 
-    Reference values are substituted by placing 4 underscores (____) in the
-    passed file where a reference value should be substituted.  Those
-    placeholders are then replaced in order of appearance in the file with
-    references in the "args" parameter.
+    Reference values are substituted by placing 2 percent signs (%%) around
+    variables in the passed file where a reference value should be substituted.
+    The "args" parameter holds a dictionary of variable-to-value pairs that
+    will be used in this substitution.  For example, to replace the variable
+    "$REGION" with a ref to "AWS:Region", you could do something like:
 
-    Reference value substitution taken from another CloudFormations library at:
+    user_data_script = user_file("userdata.sh",{"$REGION": ref("AWS::Region")})
+
+    Then, you could have a line in the script like:
+
+    R=%%$REGION%%
+
+    Reference value substitution idea taken from another CloudFormations
+    library at:
     https://github.com/devstructure/python-cloudformation/blob/master/cloudformation/__init__.py#L66-L89
 
     """
@@ -387,7 +395,7 @@ def user_file(thefile, args=None):
 
     fd = open(thefile, "r")
     for line in fd:
-        data.append(line.rstrip().split("____"))
+        data.append(line.rstrip().split("%%"))
     fd.close()
 
     for parts in data:
@@ -397,12 +405,14 @@ def user_file(thefile, args=None):
             line = []
 
             for part in parts:
-                line.extend([part, None])
-            line.pop()
+                if part:
+                    line.extend([part])
 
             for i in range(len(line)):
-                if line[i] is None:
-                    line[i] = iterargs.next()
+                val = line[i]
+                if args:
+                    if val in args.keys():
+                        line[i] = args[val]
 
             lines.append(join("", *line))
 
