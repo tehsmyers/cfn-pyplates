@@ -44,6 +44,10 @@ class IntrinsicFuncsTestCase(unittest.TestCase):
         ret = functions.ref('ThingName')
         self.assertEqual(ret['Ref'], 'ThingName')
 
+    def test_c_ref(self):
+        ret = functions.c_ref('ThingName')
+        self.assertEqual(ret['Condition'], 'ThingName')
+
     def test_and(self):
         ret = functions.c_and('Thing 1', 'Thing 2')
         self.assertEqual(ret['Fn::And'], ['Thing 1', 'Thing 2'])
