@@ -10,11 +10,12 @@
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
 import json
+import mock
 import unittest
 from textwrap import dedent
 from tempfile import NamedTemporaryFile
 
-from cfn_pyplates import core
+from cfn_pyplates import core, exceptions
 
 
 class TestResource(core.JSONableDict):
@@ -77,6 +78,17 @@ class JSONableDictTestCase(unittest.TestCase):
         self.assertIn('TestResource', bm)
         del(bm.test_resource)
         self.assertNotIn('TestResource', bm)
+
+    def test_addremoveerror(self):
+        bm = core.JSONableDict()
+        bm.attr = 'Not a JSON-able dict...'
+        with self.assertRaises(exceptions.AddRemoveError):
+            bm.remove(bm.attr)
+
+    def test_str_unicode(self):
+        # string and unicode dunder methods return the same contents
+        bm = core.JSONableDict()
+        self.assertEqual(str(bm), unicode(bm))
 
 
 class CloudFormationTemplateTestCase(unittest.TestCase):
@@ -457,3 +469,17 @@ class GenerateTestCase(unittest.TestCase):
         # call generate directly with an options mapping, no CLI
         output = json.loads(core.generate_pyplate(pyplate.name, {'ThisKeyExists': True}))
         self.assertTrue(output['Parameters']['Exists'])
+
+    @mock.patch('cfn_pyplates.exceptions.Error')
+    def test_callable_generate_no_template(self, error):
+        # Make a pyplate with no CloudFormationTemplate in it
+        pyplate_contents = ''
+        pyplate = NamedTemporaryFile()
+        pyplate.write(pyplate_contents)
+        pyplate.flush()
+
+        error.return_value = Exception('I am a test mock, this traceback is expected.')
+
+        core.generate_pyplate(pyplate.name)
+
+        error.assert_called_once_with('No CloudFormationTemplate found in pyplate')

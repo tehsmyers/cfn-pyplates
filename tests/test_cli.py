@@ -17,17 +17,11 @@ import json
 import sys
 import unittest
 
+import mock
+
 from cfn_pyplates import cli
 
-try:
-    from mock import patch
-    mock_error = None
-except ImportError:
-    patch = None
-    mock_error = 'skipped -- install mock to run this test'
 
-
-@unittest.skipIf(patch is None, mock_error)
 class CLITestCase(unittest.TestCase):
     def setUp(self):  # NOQA
         # Patch out argv, stdin, and stdout so that we can do some
@@ -35,13 +29,13 @@ class CLITestCase(unittest.TestCase):
         # - Fake arguments to be used by a CLI function
         # - Write to stding, simulating user input
         # - Suppress stdout to hide prompts during the test run
-        argv_patcher = patch('sys.argv')
+        argv_patcher = mock.patch('sys.argv')
         argv_patcher.start()
         self.addCleanup(argv_patcher.stop)
-        stdin_patcher = patch('sys.stdin', new=StringIO())
+        stdin_patcher = mock.patch('sys.stdin', new=StringIO())
         stdin_patcher.start()
         self.addCleanup(stdin_patcher.stop)
-        stdout_patcher = patch('sys.stdout', new=StringIO())
+        stdout_patcher = mock.patch('sys.stdout', new=StringIO())
         stdout_patcher.start()
         self.addCleanup(stdout_patcher.stop)
 
@@ -63,7 +57,8 @@ class CLITestCase(unittest.TestCase):
                 )
         return out
 
-    def test_generate(self):
+    @mock.patch('__builtin__.raw_input')
+    def test_generate(self, raw_input):
         # Make a pyplate that uses the options mapping
         pyplate = self._make_pyplate(u'''\
         cft = CloudFormationTemplate('This is a test')
@@ -92,12 +87,12 @@ class CLITestCase(unittest.TestCase):
         # "cfn_py_generate pyplate outfile -o options_mapping"
         sys.argv = ['cfn_py_generate', pyplate.name, outfile.name,
             '-o', options_mapping.name]
-        # Prime stdin with the answer to our interactive question
-        input = 'Test'
-        sys.stdin.write('{0}\n'.format(input))
-        sys.stdin.seek(0)
 
-        # Run the command, catch it if it tries to exit the interpreter
+        # Mock raw_input to give the expected input
+        input_value = 'Test'
+        raw_input.return_value = input_value
+
+        # Run the command
         self._generate()
 
         # Load the template back into python for assertions
@@ -109,7 +104,7 @@ class CLITestCase(unittest.TestCase):
 
         # The DoesNotExist parameter should be what was injected to stdin
         # If so, then prompts to populate missing options_mapping entries work
-        self.assertEqual(template['Parameters']['DoesNotExist'], input)
+        self.assertEqual(template['Parameters']['DoesNotExist'], input_value)
 
     def test_generate_no_options_no_outfile(self):
         # generate with no options mapping to stdout
