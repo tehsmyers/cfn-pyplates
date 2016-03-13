@@ -178,6 +178,7 @@ class CloudFormationTemplate(JSONableDict):
     Takes an option description string in the constructor
     Comes pre-loaded with all the subelements CloudFormation can stand:
 
+    - Metadata
     - Parameters
     - Mappings
     - Resources
@@ -199,6 +200,7 @@ class CloudFormationTemplate(JSONableDict):
         # Tack on all the base template elements that a CF template can handle
         # at easy-to-reach parameters
         self.options = options
+        self.metadata = Metadata()
         self.parameters = Parameters()
         self.mappings = Mappings()
         self.resources = Resources()
@@ -430,20 +432,17 @@ class Output(JSONableDict):
 
 
 class Metadata(JSONableDict):
-    """CFN Resource Metadata
+    """CFN Metadata
 
-    Used in the :class:`cfn_pyplates.core.Resource`,The Metadata attribute enables you to associate
-    structured data with a resource. By adding a Metadata attribute to a resource, you can add data
-    in JSON format to the resource declaration. In addition, you can use intrinsic functions (such
-    as GetAtt and Ref), parameters, and pseudo parameters within the Metadata attribute to add those
-    interpreted values.
+    The Metadata attribute enables you to associate arbtrary data data with a template element (for
+    example, a :class:`cfn_pyplates.core.Resource`. In addition, you can use intrinsic functions
+    (such as GetAtt and Ref), parameters, and pseudo parameters within the Metadata attribute to
+    add those interpreted values.
 
     For more information, see `the AWS docs <cfn-metadata_>`_
 
     """
-
-    def __init__(self, metadata):
-        super(Metadata, self).__init__(metadata, 'Metadata')
+    pass
 
 
 class DependsOn(object):
