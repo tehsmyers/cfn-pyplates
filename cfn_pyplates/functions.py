@@ -67,6 +67,7 @@ __all__ = [
     'c_not',
     'c_if',
     'c_equals',
+    'user_file'
 ]
 
 
@@ -358,3 +359,61 @@ def c_if(condition_name, value_if_true, value_if_false):
 
     """
     return {'Fn::If': [condition_name, value_if_true, value_if_false]}
+
+
+def user_file(thefile, args=None):
+    """Allows easy inclusion of a file with optional reference value insertions
+
+    Returns one value containing the data to pass to a "content" element of a
+    "file" entry.  This method takes care of reading in the file, iterating
+    through the lines, substituting reference values if present, and then
+    returning either just a string (single-line file) or a dictionary using
+    the "join" method.
+
+    Reference values are substituted by placing 2 percent signs (%%) around
+    variables in the passed file where a reference value should be substituted.
+    The "args" parameter holds a dictionary of variable-to-value pairs that
+    will be used in this substitution.  For example, to replace the variable
+    "$REGION" with a ref to "AWS:Region", you could do something like:
+
+    user_data_script = user_file("userdata.sh",{"$REGION": ref("AWS::Region")})
+
+    Then, you could have a line in the script like:
+
+    R=%%$REGION%%
+
+    Reference value substitution idea taken from another CloudFormations
+    library at:
+    https://github.com/devstructure/python-cloudformation/blob/master/cloudformation/__init__.py#L66-L89
+
+    """
+    lines = []
+    data = []
+
+    fd = open(thefile, "r")
+    for line in fd:
+        data.append(line.rstrip().split("%%"))
+    fd.close()
+
+    for parts in data:
+        if 1 == len(parts):
+            lines.append(parts[0])
+        else:
+            line = []
+
+            for part in parts:
+                if part:
+                    line.extend([part])
+
+            for i in range(len(line)):
+                val = line[i]
+                if args:
+                    if val in args.keys():
+                        line[i] = args[val]
+
+            lines.append(join("", *line))
+
+    if len(lines) > 1:
+        return join("\n", *lines)
+    else:
+        return lines[0]
