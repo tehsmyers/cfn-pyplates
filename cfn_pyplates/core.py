@@ -343,20 +343,15 @@ class Resource(JSONableDict):
                 # If not, coerce it
                 self.add(Properties(properties))
         if attributes:
-            if self._is_attribute(attributes):
-                self.add(attributes)
-            elif isinstance(attributes, list):
-                for i in attributes:
-                    if isinstance(i, JSONableDict) and self._is_attribute(i):
-                        self.add(i)
+            self._add_attributes(attributes)
 
-    def _is_attribute(self, attribute):
+    def _add_attributes(self, attribute):
         """Is the Object a valid Resource Attribute?
         :param attribute: the object under test
         """
         if isinstance(attribute, list):
-            for i in attribute:
-                self._is_attribute(i)
+            for attr in attribute:
+                self._add_attributes(attr)
         elif attribute.__class__.__name__ in ['Metadata', 'UpdatePolicy', 'CreationPolicy']:
             self.add(attribute)
         elif attribute.__class__.__name__ in ['DependsOn', 'DeletionPolicy', 'Condition']:
