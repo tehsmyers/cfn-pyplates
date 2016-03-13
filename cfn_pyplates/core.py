@@ -38,6 +38,7 @@ __all__ = [
     'Parameter',
     'Output',
     'DependsOn',
+    'CreationPolicy',
     'DeletionPolicy',
     'UpdatePolicy',
     'Metadata',
@@ -354,7 +355,7 @@ class Resource(JSONableDict):
         if isinstance(attribute, list):
             for i in attribute:
                 self._is_attribute(i)
-        elif attribute.__class__.__name__ in ['Metadata', 'UpdatePolicy']:
+        elif attribute.__class__.__name__ in ['Metadata', 'UpdatePolicy', 'CreationPolicy']:
             self.add(attribute)
         elif attribute.__class__.__name__ in ['DependsOn', 'DeletionPolicy', 'Condition']:
             self.update({attribute.__class__.__name__: attribute.value})
@@ -465,6 +466,33 @@ class DependsOn(object):
     def __init__(self, policy=None):
         if policy:
             self.value = policy
+
+
+class CreationPolicy(JSONableDict):
+    """A CFN Resource Creation Policy
+
+    Used in the :class:`cfn_pyplates.core.Resource`, The CreationPolicy attribute enables you to
+    prevent a Resource's status reaching create complete until AWS CloudFormation receives a
+    specified number of success signals or the timeout period is exceeded
+
+    For more information, see `the AWS docs <cfn-creationpolicy_>`_
+
+    Args:
+        count: number of success signals AWS CloudFormation must receive before
+            it sets the resource status as CREATE_COMPLETE
+        timeout: The length of time that AWS CloudFormation waits for the number of signals that
+            was specified in the count kwarg (see AWS docs for syntax)
+
+    """
+    def __init__(self, count=None, timeout=None):
+        super(CreationPolicy, self).__init__(name='CreationPolicy')
+        resource_signal = {}
+        if count is not None:
+            resource_signal['Count'] = int(count)
+        if timeout is not None:
+            resource_signal['Timeout'] = str(timeout)
+        resource_signal = JSONableDict(resource_signal, 'ResourceSignal')
+        self.add(resource_signal)
 
 
 class DeletionPolicy(object):
