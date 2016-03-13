@@ -19,7 +19,7 @@ import json
 import traceback
 from collections import OrderedDict
 
-from cfn_pyplates.exceptions import AddRemoveError, Error
+from cfn_pyplates import exceptions
 import functions
 
 aws_template_format_version = '2010-09-09'
@@ -144,7 +144,7 @@ class JSONableDict(OrderedDict):
                 {child.name: child}
             )
         else:
-            raise AddRemoveError
+            raise exceptions.AddRemoveError
 
         return child
 
@@ -161,7 +161,7 @@ class JSONableDict(OrderedDict):
         if isinstance(child, JSONableDict):
             del(self[child.name])
         else:
-            raise AddRemoveError
+            raise exceptions.AddRemoveError
 
     def to_json(self, *args, **kwargs):
         """Thin wrapper around the :func:`json.dumps` method.
@@ -339,7 +339,7 @@ class Resource(JSONableDict):
             try:
                 # Assume we've got a JSONableDict
                 self.add(properties)
-            except AddRemoveError:
+            except exceptions.AddRemoveError:
                 # If not, coerce it
                 self.add(Properties(properties))
         if attributes:
@@ -642,4 +642,4 @@ def _find_cloudformationtemplate(pyplate):
             return value
 
     # If we haven't returned something, it's an Error
-    raise Error('No CloudFormationTemplate found in pyplate')
+    raise exceptions.Error('No CloudFormationTemplate found in pyplate')
