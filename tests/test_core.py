@@ -97,6 +97,9 @@ class CloudFormationTemplateTestCase(unittest.TestCase):
         self.assertIn('Outputs', cft)
         self.assertIsInstance(cft.outputs, core.Outputs)
 
+        self.assertIn('Metadata', cft)
+        self.assertIsInstance(cft.metadata, core.Metadata)
+
     def test_no_description(self):
         cft = core.CloudFormationTemplate()
         self.assertNotIn('Description', cft)
@@ -285,6 +288,20 @@ class ConditionsTestCase(unittest.TestCase):
           "Ref": "ReferencedThing"
         }''')
         self.assertEqual(unicode(cft.conditions.test), expected_out)
+
+
+class MetadataTestCase(unittest.TestCase):
+    def test_metadata(self):
+        cft = core.CloudFormationTemplate()
+        cft.metadata = core.JSONableDict(name='Metadata')
+        cft.metadata['TestKey'] = 'Test Value'
+
+        # And it should look like this...
+        expected_out = dedent(u'''\
+        {
+          "TestKey": "Test Value"
+        }''')
+        self.assertEqual(unicode(cft.metadata), expected_out)
 
 
 class MiscElementsTestCase(unittest.TestCase):

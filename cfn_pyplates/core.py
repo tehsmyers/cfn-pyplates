@@ -440,9 +440,6 @@ class Metadata(JSONableDict):
 
     For more information, see `the AWS docs <cfn-metadata_>`_
 
-    Args:
-        properties: The unique name of the output
-
     """
 
     def __init__(self, metadata):
