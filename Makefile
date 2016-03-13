@@ -7,7 +7,10 @@ upload:
 clean:
 	rm -rf AUTHORS build ChangeLog dist *.egg-info __pycache__ *.egg .coverage
 
-test-requirements:
+requirements:
+	pip install -Ur requirements.txt
+
+test-requirements: requirements
 	pip install -Ur test-requirements.txt
 
 test:
