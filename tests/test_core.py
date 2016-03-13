@@ -12,6 +12,7 @@
 import json
 import mock
 import unittest
+import warnings
 from textwrap import dedent
 from tempfile import NamedTemporaryFile
 
@@ -84,6 +85,19 @@ class JSONableDictTestCase(unittest.TestCase):
         bm.attr = 'Not a JSON-able dict...'
         with self.assertRaises(exceptions.AddRemoveError):
             bm.remove(bm.attr)
+
+    def test_remove_non_child(self):
+        # Change the
+        parent = core.JSONableDict(name="parent")
+        parent.child = core.JSONableDict()
+        bad_name = 'hahaha I did nefarious things!'
+        parent.child.name = bad_name
+        with warnings.catch_warnings(record=True) as caught:
+            parent.remove(parent.child)
+
+        # exactly one warning is expected to be caught related to the bad name
+        self.assertEqual(len(caught), 1)
+        self.assertTrue(bad_name in str(caught[0].message))
 
     def test_str_unicode(self):
         # string and unicode dunder methods return the same contents

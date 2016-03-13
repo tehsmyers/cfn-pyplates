@@ -17,6 +17,7 @@ These are all available without preamble in a pyplate's global namespace.
 import inspect
 import json
 import traceback
+import warnings
 from collections import OrderedDict
 
 from cfn_pyplates import exceptions
@@ -97,12 +98,7 @@ class JSONableDict(OrderedDict):
     def __delattr__(self, name):
         attr = getattr(self, name)
         if isinstance(attr, JSONableDict):
-            try:
-                self.remove(attr)
-            except KeyError:
-                # Key already deleted, somehow.
-                # Everything's fine here now. How're you?
-                pass
+            self.remove(attr)
         super(JSONableDict, self).__delattr__(name)
 
     def _get_name(self):
@@ -159,7 +155,14 @@ class JSONableDict(OrderedDict):
 
         """
         if isinstance(child, JSONableDict):
-            del(self[child.name])
+            try:
+                del(self[child.name])
+            except KeyError:
+                # This will KeyError if the name of a child is changed but its
+                # corresponding key in this dict is not updated. In normal usage,
+                # this should never happen. If it does happen, you're doing
+                # weird stuff, and have been warned.
+                warnings.warn('{0} not found in dict when attempting removal'.format(child.name))
         else:
             raise exceptions.AddRemoveError
 
