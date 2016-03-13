@@ -12,6 +12,9 @@ Amazon Web Services CloudFormation templates, generated with Python!
 .. image:: https://travis-ci.org/seandst/cfn-pyplates.png
     :target: https://travis-ci.org/seandst/cfn-pyplates/
 
+.. image:: https://coveralls.io/repos/github/seandst/cfn-pyplates/badge.svg
+    :target: https://coveralls.io/github/seandst/cfn-pyplates
+
 Where to get it
 ===============
 

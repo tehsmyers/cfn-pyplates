@@ -1,8 +1,12 @@
 language: python
 python:
-- "2.7"
+  - "2.7"
 install:
   - python setup.py install
   - make test-requirements
+  # We only use coveralls in travis, so only install it here
+  - pip install python-coveralls
 script: make test
 sudo: false
+after_success:
+  - coveralls
