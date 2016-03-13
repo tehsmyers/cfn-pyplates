@@ -161,3 +161,79 @@ class CLITestCase(unittest.TestCase):
         out = self._generate(fail_on_error=False)
         # This pyplate should fail because its python syntax isn't valid
         self.assertIn('SyntaxError', out)
+
+    @mock.patch('__builtin__.raw_input')
+    def test_generate_raw_input_cancelled(self, raw_input):
+        raw_input.side_effect = KeyboardInterrupt
+        # Make a pyplate that uses the options mapping
+        pyplate = self._make_pyplate(u'''\
+        cft = CloudFormationTemplate('This is a test')
+        cft.parameters.update({
+            'Exists': options['ThisKeyExists'],
+            'DoesNotExist': options['ThisKeyDoesNotExist']
+        })''')
+
+        # Now make an options mapping with only one of those keys in it
+        # to simultaneously test options interpolation and
+        # user-prompted input
+        options_mapping_contents = dedent(u'''\
+        {
+            'ThisKeyExists': true
+        }
+        ''')
+        options_mapping = NamedTemporaryFile()
+        options_mapping.write(options_mapping_contents)
+        options_mapping.flush()
+
+        # The outfile which will receive the rendered json
+        outfile = NamedTemporaryFile()
+
+        # Populate sys.argv with something reasonable based on all the
+        # tempfiles. On the command line this would look like
+        # "cfn_py_generate pyplate outfile -o options_mapping"
+        sys.argv = ['cfn_py_generate', pyplate.name, outfile.name,
+            '-o', options_mapping.name]
+
+        # Similar to test_generate, but simulate the user hitting Ctrl+C,
+        # and make sure SystemExit was raised.
+        with self.assertRaises(SystemExit):
+            # Run the command, catch it if it tries to exit the interpreter
+            self._generate()
+
+    @mock.patch('__builtin__.raw_input')
+    def test_generate_raw_input_empty(self, raw_input):
+        # Make a pyplate that uses the options mapping
+        pyplate = self._make_pyplate(u'''\
+        cft = CloudFormationTemplate('This is a test')
+        cft.parameters.update({
+            'Exists': options['ThisKeyExists'],
+            'DoesNotExist': options['ThisKeyDoesNotExist']
+        })''')
+
+        # Now make an options mapping with only one of those keys in it
+        # to simultaneously test options interpolation and
+        # user-prompted input
+        options_mapping = NamedTemporaryFile()
+        options_mapping.write('{}')
+        options_mapping.flush()
+
+        # The outfile which will receive the rendered json
+        outfile = NamedTemporaryFile()
+
+        # Populate sys.argv with something reasonable based on all the
+        # tempfiles. On the command line this would look like
+        # "cfn_py_generate pyplate outfile -o options_mapping"
+        sys.argv = ['cfn_py_generate', pyplate.name, outfile.name,
+            '-o', options_mapping.name]
+
+        # Mock raw_input to give an empty input value
+        raw_input.return_value = ''
+
+        # Run the command
+        self._generate()
+
+        # Load the template back into python for assertions
+        template = json.load(outfile)
+
+        # The empty string returned by raw_input should have explicitly been transformed to None
+        self.assertTrue(template['Parameters']['DoesNotExist'] is None)
