@@ -409,7 +409,7 @@ class MiscElementsTestCase(unittest.TestCase):
                 self.assertEqual(entry['Value'], 'TestValue2')
 
 
-class TestCreationPolicyOptionalKwargs(unittest.TestCase):
+class CreationPolicyOptionalKwargs(unittest.TestCase):
     def test_creation_policy_no_args(self):
         creation_policy = core.CreationPolicy()
         resource_signal = creation_policy['ResourceSignal']
