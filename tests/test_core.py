@@ -174,6 +174,25 @@ class ResourcesTestCase(unittest.TestCase):
         }''')
         self.assertEqual(unicode(cft.resources.test), expected_out)
 
+    def test_resource_with_creation_policy(self):
+        creation_policy = core.CreationPolicy(42, 'NotActuallyValidatedYerOnYerOwn')
+        res = core.Resource('TestResource', 'AWS::Resource::Test', None, creation_policy)
+        cft = core.CloudFormationTemplate()
+        cft.resources.test = res
+
+        # The output should have the metadata attached
+        expected_out = dedent(u'''\
+        {
+          "Type": "AWS::Resource::Test",
+          "CreationPolicy": {
+            "ResourceSignal": {
+              "Count": 42,
+              "Timeout": "NotActuallyValidatedYerOnYerOwn"
+            }
+          }
+        }''')
+        self.assertEqual(unicode(cft.resources.test), expected_out)
+
     def test_resource_with_deletion_policy(self):
         deletion_policy = core.DeletionPolicy("Retain")
         res = core.Resource('TestResource', 'AWS::Resource::Test', None, deletion_policy)
@@ -388,6 +407,39 @@ class MiscElementsTestCase(unittest.TestCase):
                 self.assertEqual(entry['Value'], 'TestValue1')
             if entry['Key'] == 'TestKey2':
                 self.assertEqual(entry['Value'], 'TestValue2')
+
+
+class TestCreationPolicyOptionalKwargs(unittest.TestCase):
+    def test_creation_policy_no_args(self):
+        creation_policy = core.CreationPolicy()
+        resource_signal = creation_policy['ResourceSignal']
+
+        # ResourceSignal should be an empty dict
+        self.assertFalse(resource_signal)
+        expected_out = dedent(u'''\
+        {
+          "ResourceSignal": {}
+        }''')
+        self.assertEqual(unicode(creation_policy), expected_out)
+
+    def test_creation_policy_arg_casting(self):
+        # Make sure the int and string type casts work correctly
+        with self.assertRaises(ValueError):
+            core.CreationPolicy(count='Raise a ValueError trying to cast this as an int.')
+
+        creation_policy = core.CreationPolicy(count='0', timeout=15)
+        resource_signal = creation_policy['ResourceSignal']
+        self.assertTrue(isinstance(resource_signal['Count'], int))
+        self.assertTrue(isinstance(resource_signal['Timeout'], str))
+
+        expected_out = dedent(u'''\
+        {
+          "ResourceSignal": {
+            "Count": 0,
+            "Timeout": "15"
+          }
+        }''')
+        self.assertEqual(unicode(creation_policy), expected_out)
 
 
 class GenerateTestCase(unittest.TestCase):
