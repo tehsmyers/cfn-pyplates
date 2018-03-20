@@ -423,10 +423,12 @@ class Output(JSONableDict):
 
     """
 
-    def __init__(self, name, value, description=None):
+    def __init__(self, name, value, description=None, export_name=None):
         update_dict = {'Value': value}
         if description is not None:
             update_dict['Description'] = description
+        if export_name is not None:
+            update_dict['Export'] = {'Name': export_name}
         super(Output, self).__init__(update_dict, name)
 
 
